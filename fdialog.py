@@ -11,13 +11,6 @@
 #
 #]]
 
-"""
-File Dialog is a File Dialog specificaly designed for Workspace Desktop Interface
-It 'Returns' the selected files or folders.
-"""
-
-
-
 import dearpygui.dearpygui as dpg
 import os
 import time
