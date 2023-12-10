@@ -39,7 +39,7 @@ Note: The file dialog callback can be changed by using ```change_callback()```
 - Modern icons
 - Shortcut menu
 - Drives menu
-- Customization of the the file dialog windows
+- Customization of the the file dialog window
 - Can be used at all time by using ```show_file_dialog()```
 
 # Requirements
