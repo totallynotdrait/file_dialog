@@ -413,6 +413,7 @@ class FileDialog:
                                             _makefile(file, open_file)
                                 else:
                                     _makefile(file, open_file)
+                    dpg.configure_item("ex_path_input", default_value=os.getcwd())
 
                 # exceptions
                 except FileNotFoundError:
