@@ -1,39 +1,19 @@
-#[[
-#
-#       Copyright (C) Workspace Desktop Interface
-#       Developed and created by Arthur - Ionut Turcan (AKA Dr. AIT)
-#
-#   INFO:
-#   None
-#   
-#   
-#
-#
-#]]
-
 import dearpygui.dearpygui as dpg
 import os
 import time
-import shutil
 import psutil
-
-# will check if the module 'send2trash' is installed, if not it will install with pip3
-try:
-    import send2trash
-except ModuleNotFoundError:
-    os.system("pip3 install send2trash")
-
 import threading
 
 
 last_click_time = 0
 
-
 class FileDialog:
     """
     Arguments:
-        width:                  Sets the File dialog window width
-        height:                 Sets the File dialog window height
+        title:                  Sets the file dialog window name
+        width:                  Sets the file dialog window width
+        height:                 Sets the file dialog window height
+        min_size:               Sets the file dialog minimum size
         dirs_only:              When true it will only list directories
         default_path:           The default path when File dialog starts, if it's cwd it will be the current working directory
         file_filter:            If it's for example .py it will only list that type of files
@@ -49,10 +29,12 @@ class FileDialog:
     """
     def __init__(
         self,
+        title="File dialog",
         width=950,
         height=650,
+        min_size=(460, 320),
         dirs_only=False,
-        default_path="cwd",
+        default_path=os.getcwd(),
         file_filter=".*",
         callback=None,
         show_dir_size=False, # NOTE: This argument is reccomended to set it to False, because it can take a while, probably hours or days, to calculate the size of the folder and it's sub-directories
@@ -63,8 +45,11 @@ class FileDialog:
         modal=True,
     ):
         
+        # args
+        self.title = title
         self.width = width
         self.height = height
+        self.min_size = min_size
         self.dirs_only = dirs_only
         self.default_path = default_path
         self.file_filter = file_filter
@@ -76,9 +61,13 @@ class FileDialog:
         self.no_resize = no_resize
         self.modal = modal
 
-        selected_files = []
-        self.selected_files = selected_files
+        self.PAYLOAD_TYPE = 'ws_file_dialog'
+        self.selected_files = []
+        self.selec_height = 16
         
+
+        # file dialog theme
+
         with dpg.theme() as selec_alignt:
             with dpg.theme_component(dpg.mvThemeCat_Core):
                 dpg.add_theme_style(dpg.mvStyleVar_SelectableTextAlign, x=0, y=.5)
@@ -87,24 +76,7 @@ class FileDialog:
             with dpg.theme_component(dpg.mvThemeCat_Core):
                 dpg.add_theme_style(dpg.mvStyleVar_SelectableTextAlign, x=1, y=.5)
 
-        def return_items():
-            dpg.hide_item("file_dialog")
-            if callback == None:
-                pass
-            else:
-                self.callback(self.selected_files)
-            selected_files.clear()
-            reset_dir(".")
-
-
-
-        big_icons = True
-        PAYLOAD_TYPE = 'file_dialog'
-
-
-
-        # adds the icons
-        # DO NOT CHANGE THE PATH OR DELETE THE FILES
+        # texture loading
         diwidth, diheight, dichannels, didata = dpg.load_image("images/document.png")
         afiwidth, afiheight, afichannels, afidata = dpg.load_image("images/add_folder.png")
         afwidth, afheight, afchannels, afdata = dpg.load_image("images/add_file.png")
@@ -124,282 +96,76 @@ class FileDialog:
         dcfwidth, dcfheight, dcfchannels, dcfdata = dpg.load_image("images/documents.png")
         swidth, sheight, schannels, sdata = dpg.load_image("images/search.png")
 
+        # low-level
+        self.ico_document = [diwidth, diheight, didata]
+        self.ico_add_folder = [afiwidth, afiheight, afidata]
+        self.ico_add_file = [afwidth, afheight, afdata]
+        self.ico_mini_folder = [mfwidth, mfheight, mfdata]
+        self.ico_folder = [fiwidth, fiheight, fidata]
+        self.ico_mini_document = [mdwidth, mdheight, mddata]
+        self.ico_mini_error = [mewidth, meheight, medata]
+        self.ico_refresh = [rwidth, rheight, rdata]
+        self.ico_hard_disk = [hdwidth, hdheight, hddata]
+        self.ico_picture = [pwidth, pheight, pdata]
+        self.ico_big_picture = [bpwidth, bpheight, bpdata]
+        self.ico_picture_folder = [pfwidth, pfheight, pfdata]
+        self.ico_desktop = [dwidth, dheight, ddata]
+        self.ico_videos = [vwidth, vheight, vdata]
+        self.ico_music_folder = [mwidth, mheight, mdata]
+        self.ico_downloads = [dfwidth, dfheight, dfdata]
+        self.ico_document_folder = [dcfwidth, dcfheight, dcfdata]
+        self.ico_search = [swidth, sheight, sdata]
+
+
+        # high-level
         with dpg.texture_registry():
-            dpg.add_static_texture(width=diwidth, height=diheight, default_value=didata, tag="document_icon")
-            dpg.add_static_texture(width=afiwidth, height=afiheight, default_value=afidata, tag="add_folder_icon")
-            dpg.add_static_texture(width=afwidth, height=afheight, default_value=afdata, tag="add_file_icon")
-            dpg.add_static_texture(width=mfwidth, height=mfheight, default_value=mfdata, tag="mini_folder")
-            dpg.add_static_texture(width=fiwidth, height=fiheight, default_value=fidata, tag="folder_icon")
-            dpg.add_static_texture(width=mdwidth, height=mdheight, default_value=mddata, tag="mini_document")
-            dpg.add_static_texture(width=mewidth, height=meheight, default_value=medata, tag="mini_error")
-            dpg.add_static_texture(width=rwidth, height=rheight, default_value=rdata, tag="refresh")
-            dpg.add_static_texture(width=hdwidth, height=hdheight, default_value=hddata, tag="harddisk")
-            dpg.add_static_texture(width=pwidth, height=pheight, default_value=pdata, tag="picture")
-            dpg.add_static_texture(width=bpwidth, height=bpheight, default_value=bpdata, tag="big_picture")
-            dpg.add_static_texture(width=pfwidth, height=pfheight, default_value=pfdata, tag="picture_folder")
-            dpg.add_static_texture(width=dwidth, height=dheight, default_value=ddata, tag="desktop")
-            dpg.add_static_texture(width=vwidth, height=vheight, default_value=vdata, tag="videos")
-            dpg.add_static_texture(width=mwidth, height=mheight, default_value=mdata, tag="music")
-            dpg.add_static_texture(width=dfwidth, height=dfheight, default_value=dfdata, tag="downloads")
-            dpg.add_static_texture(width=dcfwidth, height=dcfheight, default_value=dcfdata, tag="documents")
-            dpg.add_static_texture(width=swidth, height=sheight, default_value=sdata, tag="search")
+            dpg.add_static_texture(width=self.ico_document[0], height=self.ico_document[1], default_value=self.ico_document[2], tag="ico_document")
+            dpg.add_static_texture(width=self.ico_add_folder[0], height=self.ico_add_folder[1], default_value=self.ico_add_folder[2], tag="ico_add_folder")
+            dpg.add_static_texture(width=self.ico_add_file[0], height=self.ico_add_file[1], default_value=self.ico_add_file[2], tag="ico_add_file")
+            dpg.add_static_texture(width=self.ico_mini_folder[0], height=self.ico_mini_folder[1], default_value=self.ico_mini_folder[2], tag="ico_mini_folder")
+            dpg.add_static_texture(width=self.ico_folder[0], height=self.ico_folder[1], default_value=self.ico_folder[2], tag="ico_folder")
+            dpg.add_static_texture(width=self.ico_mini_document[0], height=self.ico_mini_document[1], default_value=self.ico_mini_document[2], tag="ico_mini_document")
+            dpg.add_static_texture(width=self.ico_mini_error[0], height=self.ico_mini_error[1], default_value=self.ico_mini_error[2], tag="ico_mini_error")
+            dpg.add_static_texture(width=self.ico_refresh[0], height=self.ico_refresh[1], default_value=self.ico_refresh[2], tag="ico_refresh")
+            dpg.add_static_texture(width=self.ico_hard_disk[0], height=self.ico_hard_disk[1], default_value=self.ico_hard_disk[2], tag="ico_hard_disk")
+            dpg.add_static_texture(width=self.ico_picture[0], height=self.ico_picture[1], default_value=self.ico_picture[2], tag="ico_picture")
+            dpg.add_static_texture(width=self.ico_big_picture[0], height=self.ico_big_picture[1], default_value=self.ico_big_picture[2], tag="ico_big_picture")
+            dpg.add_static_texture(width=self.ico_picture_folder[0], height=self.ico_picture_folder[1], default_value=self.ico_picture_folder[2], tag="ico_picture_folder")
+            dpg.add_static_texture(width=self.ico_desktop[0], height=self.ico_desktop[1], default_value=self.ico_desktop[2], tag="ico_desktop")
+            dpg.add_static_texture(width=self.ico_videos[0], height=self.ico_videos[1], default_value=self.ico_videos[2], tag="ico_videos")
+            dpg.add_static_texture(width=self.ico_music_folder[0], height=self.ico_music_folder[1], default_value=self.ico_music_folder[2], tag="ico_music_folder")
+            dpg.add_static_texture(width=self.ico_downloads[0], height=self.ico_downloads[1], default_value=self.ico_downloads[2], tag="ico_downloads")
+            dpg.add_static_texture(width=self.ico_document_folder[0], height=self.ico_document_folder[1], default_value=self.ico_document_folder[2], tag="ico_document_folder")
+            dpg.add_static_texture(width=self.ico_search[0], height=self.ico_search[1], default_value=self.ico_search[2], tag="ico_search")
 
-        
-        #the main function that lists the files and folders
-        def reset_dir(dirpath=self.default_path, dirs_only=self.dirs_only, ffilter=self.file_filter):
-            global internal
-            def internal():
-                global count, selected_files_int
-                count = 0
-                path = os.getcwd()
-                selected_files.clear()
-                try:
-                    dirlist = os.listdir(path)
+            self.img_document = "ico_document"
+            self.img_add_folder = "ico_add_folder"
+            self.img_add_file = "ico_add_file"
+            self.img_mini_folder = "ico_mini_folder"
+            self.img_folder = "ico_folder"
+            self.img_mini_document = "ico_mini_document"
+            self.img_mini_error = "ico_mini_error"
+            self.img_refresh = "ico_refresh"
+            self.img_hard_disk = "ico_hard_disk"
+            self.img_picture = "ico_picture"
+            self.img_big_picture = "ico_big_picture"
+            self.img_picture_folder = "ico_picture_folder"
+            self.img_desktop = "ico_desktop"
+            self.img_videos = "ico_videos"
+            self.img_music_folder = "ico_music_folder"
+            self.img_downloads = "ico_downloads"
+            self.img_document_folder = "ico_document_folder"
+            self.img_search = "ico_search"
 
-                    if list:
-                        def dir_back():
-                            global last_click_time
-                            current_time = time.time()
-                            if current_time - last_click_time < 0.5:  # adjust the time as needed
-                                chdir("..")
-                                last_click_time = 0
-
-                        delete_table()
-                        selec_height = 16
-                        count = 0
-                        # Get the file name
-                        with dpg.table_row(parent="explorer"):
-                            dpg.add_selectable(label="..", callback=dir_back, span_columns=True, height=selec_height)
-                        if dirs_only:
-                            for item in dirlist:
-                                if os.path.isdir(item):
-                                    count += 1
-                                    selected_files_int = 0
-                                    file_name = os.path.basename(item)
-                                    
-                                    # Get the creation time and format it
-                                    creation_time = os.path.getctime(item)
-                                    creation_time = time.ctime(creation_time)
-
-                                    # Get the type of the item
-                                    item_type = "Dir" if os.path.isdir(item) else "File"
-
-                                    # Get the size of the item
-                                    item_size = get_file_size(item)
-
-                                    # Add a row to the table
-
-                                    
-                                    with dpg.table_row(parent="explorer"):
-                                        with dpg.group(horizontal=True):
-                                            if file_name.endswith((".png", ".jpg")):
-                                                dpg.add_image("picture")
-                                            elif item_type == "Dir":
-                                                dpg.add_image("mini_folder")
-                                            elif item_type == "File":
-                                                dpg.add_image("mini_document")
-                                            
-                                            cell_name = dpg.add_selectable(label=file_name, callback=print_file, height=selec_height, span_columns=True, user_data=[file_name, path+"\\"+file_name])
-                                        cell_time = dpg.add_selectable(label=creation_time, callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-                                        cell_type = dpg.add_selectable(label=item_type, callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-                                        cell_size = dpg.add_selectable(label=str(item_size), callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-                                        
-                                        if self.allow_drag == True:
-                                            drag_payload = dpg.add_drag_payload(parent=cell_name, payload_type=PAYLOAD_TYPE)
-                                        dpg.bind_item_theme(cell_name, selec_alignt)
-                                        dpg.bind_item_theme(cell_time, selec_alignt)
-                                        dpg.bind_item_theme(cell_type, selec_alignt)
-                                        dpg.bind_item_theme(cell_size, size_alignt)
-                                        if self.allow_drag == True:
-                                            if file_name.endswith((".png", ".jpg")):
-                                                dpg.add_image("big_picture", parent=drag_payload)
-                                            elif item_type == "Dir":
-                                                dpg.add_image("folder_icon", parent=drag_payload)
-                                            elif item_type == "File":
-                                                dpg.add_image("document_icon", parent=drag_payload)
-                        else:
-                            for item in dirlist:
-                                if os.path.isdir(item):
-                                    count += 1
-                                    selected_files_int = 0
-                                    file_name = os.path.basename(item)
-                                    
-                                    # Get the creation time and format it
-                                    creation_time = os.path.getctime(item)
-                                    creation_time = time.ctime(creation_time)
-
-                                    # Get the type of the item
-                                    item_type = "Dir" if os.path.isdir(item) else "File"
-
-                                    # Get the size of the item
-                                    item_size = get_file_size(item)
-
-                                    # Add a row to the table
-
-                                    
-                                    with dpg.table_row(parent="explorer"):
-                                        with dpg.group(horizontal=True):
-                                            if file_name.endswith((".png", ".jpg")):
-                                                dpg.add_image("picture")
-                                            elif item_type == "Dir":
-                                                dpg.add_image("mini_folder")
-                                            elif item_type == "File":
-                                                dpg.add_image("mini_document")
-                                            
-                                            cell_name = dpg.add_selectable(label=file_name, callback=print_file, height=selec_height, span_columns=True, user_data=[file_name, path+"\\"+file_name])
-                                        cell_time = dpg.add_selectable(label=creation_time, callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-                                        cell_type = dpg.add_selectable(label=item_type, callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-                                        cell_size = dpg.add_selectable(label=str(item_size), callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-
-                                        if self.allow_drag == True:
-                                            drag_payload = dpg.add_drag_payload(parent=cell_name, payload_type=PAYLOAD_TYPE)
-                                        dpg.bind_item_theme(cell_name, selec_alignt)
-                                        dpg.bind_item_theme(cell_time, selec_alignt)
-                                        dpg.bind_item_theme(cell_type, selec_alignt)
-                                        dpg.bind_item_theme(cell_size, size_alignt)
-                                        if self.allow_drag == True:
-                                            if file_name.endswith((".png", ".jpg")):
-                                                dpg.add_image("big_picture", parent=drag_payload)
-                                            elif item_type == "Dir":
-                                                dpg.add_image("folder_icon", parent=drag_payload)
-                                            elif item_type == "File":
-                                                dpg.add_image("document_icon", parent=drag_payload)
-                            for item in dirlist:
-                                if os.path.isfile(item):
-                                    if self.file_filter == ".*" or item.endswith(self.file_filter):  
-                                        count += 1
-                                        selected_files_int = 0
-                                        file_name = os.path.basename(item)
-                                        
-                                        # Get the creation time and format it
-                                        creation_time = os.path.getctime(item)
-                                        creation_time = time.ctime(creation_time)
-
-                                        # Get the type of the item
-                                        item_type = "Dir" if os.path.isdir(item) else "File"
-
-                                        # Get the size of the item
-                                        item_size = get_file_size(item)
-
-                                        # Add a row to the table
-
-                                        
-                                        with dpg.table_row(parent="explorer"):
-                                            with dpg.group(horizontal=True):
-                                                if file_name.endswith((".png", ".jpg", ".jpeg")):
-                                                    dpg.add_image("picture")
-                                                elif item_type == "Dir":
-                                                    dpg.add_image("mini_folder")
-                                                elif item_type == "File":
-                                                    dpg.add_image("mini_document")
-                                                
-                                                cell_name = dpg.add_selectable(label=file_name, callback=print_file, height=selec_height, span_columns=True, user_data=[file_name, path+"\\"+file_name])
-                                            cell_time = dpg.add_selectable(label=creation_time, callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-                                            cell_type = dpg.add_selectable(label=item_type, callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-                                            cell_size = dpg.add_selectable(label=str(item_size), callback=print_file, span_columns=True, height=selec_height, user_data=[file_name, path+"\\"+file_name])
-
-                                            if self.allow_drag == True:
-                                                drag_payload = dpg.add_drag_payload(parent=cell_name, payload_type=PAYLOAD_TYPE)
-                                            dpg.bind_item_theme(cell_name, selec_alignt)
-                                            dpg.bind_item_theme(cell_time, selec_alignt)
-                                            dpg.bind_item_theme(cell_type, selec_alignt)
-                                            dpg.bind_item_theme(cell_size, size_alignt)
-                                            if self.allow_drag == True:
-                                                if file_name.endswith((".png", ".jpg")):
-                                                    dpg.add_image("big_picture", parent=drag_payload)
-                                                elif item_type == "Dir":
-                                                    dpg.add_image("folder_icon", parent=drag_payload)
-                                                elif item_type == "File":
-                                                    dpg.add_image("document_icon", parent=drag_payload)
-                        dpg.configure_item("ex_path_input", default_value=os.getcwd())
-                        
-                    else:
-                        print("DEV:ERROR: path is not defined or not true")
-                except FileNotFoundError:
-                    print("DEV:ERROR: Invalid path : "+str(dirpath))
-                except Exception as e:
-                    message_box("File dialog - Error", f"An unknown error has occured when listing the items,\nplease restart the application.\n\nMore info:\n{e}")
-
-            previous_contents = set(os.listdir(os.getcwd()))
-
-            thread = threading.Thread(target=internal, args=(), daemon=True)
-            thread.start() # this is used to make sure the program continues to work while the internal function is still working
-        
-        
-        # checks if there are any changes to the directory
-        def check_dir():
-            global previous_contents
-            directory_to_monitor = os.getcwd()
-            current_contents = set(os.listdir(directory_to_monitor))
-            new_items = current_contents - previous_contents
-            if new_items:
-                reset_dir(os.getcwd())
-
-            deleted_items = previous_contents - current_contents
-            if deleted_items:
-                reset_dir(os.getcwd())
-
-            previous_contents = current_contents
-
-        def delete_table():
-            for child in dpg.get_item_children("explorer", 1):
-                dpg.delete_item(child)
-
-        def message_box(title, message):
-            with dpg.mutex():
-                viewport_width = dpg.get_viewport_client_width()
-                viewport_height = dpg.get_viewport_client_height()
-                with dpg.window(label=title, no_close=True) as modal_id:
-                    dpg.add_text(message)
-                    with dpg.group(horizontal=True):
-                        dpg.add_button(label="Ok", width=-1, user_data=(modal_id, True), callback=lambda:dpg.delete_item(modal_id))
-
-            dpg.split_frame()
-            width = dpg.get_item_width(modal_id)
-            height = dpg.get_item_height(modal_id)
-            dpg.set_item_pos(modal_id, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])
-
-        def chdir(path):
-            try:
-                cwd = os.getcwd()
-                os.chdir(path)
-                reset_dir(cwd)
-            except PermissionError as e:
-                message_box("Explorer - PerimssionError", f"Cannot open the folder because is a system folder or the access is denied\n\nMore info:\n{e}")
-
-        
-
-        def print_file(sender, app_data, user_data):
-            global last_click_time
-        
-            #print("dclick")
-            if dpg.is_key_down(dpg.mvKey_Control):
-                if dpg.get_value(sender) == True:
-                    selected_files.append(user_data[1])
-                else:
-                    selected_files.remove(user_data[1])
-            else:
-                dpg.set_value(sender, False)
-
-                current_time = time.time()
-                if current_time - last_click_time < 0.5:  # adjust the time as needed
-                    #print(f"Selectable {sender} has been double clicked")
-                    if user_data is not None and user_data[1] is not None:
-                        if os.path.isdir(user_data[1]):
-                            #print(f"Content:{dpg.get_item_label(sender)}, files: {user_data}")
-                            chdir(user_data[1])
-                        elif os.path.isfile(user_data[1]):
-                            selected_files.append(user_data[1])
-                            return_items()
-                            return user_data[1]
-                last_click_time = current_time
-                
-                            
-
-        def get_all_drives():
+        # low-level functions
+        def _get_all_drives():
             all_drives = psutil.disk_partitions()
             drive_list = [drive.device for drive in all_drives if drive.device]
             return drive_list
+        
+        def delete_table():
+            for child in dpg.get_item_children("explorer", 1):
+                dpg.delete_item(child)
 
         def get_file_size(file_path):
             # Get the file size in bytes
@@ -439,111 +205,282 @@ class FileDialog:
 
             # If the file size is smaller than 1 byte or unknown
             return "0 B"  # or "Unknown" or any other desired default
-
-
-
-        def new_dir():
-            with dpg.window(label="New directory", width=350, no_close=True, no_collapse=True, pos=(50, 50)) as nd:
-                dpg.add_input_text(default_value=os.getcwd(), width=-1, hint="Path", tag="ex_nd_path")
-                with dpg.group(horizontal=True):
-                    dpg.add_button(label="Create", width=80, callback=lambda:(os.mkdir(dpg.get_value("ex_nd_path")), reset_dir(os.getcwd()), dpg.delete_item(nd)))
-                    dpg.add_button(label="Cancel", width=80, callback=lambda:dpg.delete_item(nd))
-
-        def new_file():
-            with dpg.window(label="New file", width=350, no_close=True, no_collapse=True, pos=(50, 50)) as nd:
-                dpg.add_input_text(default_value=os.getcwd(), width=-1, hint="Path", tag="ex_nf_file")
-                with dpg.group(horizontal=True):
-                    dpg.add_button(label="Create", width=80, callback=lambda:(open(dpg.get_value("ex_nf_file"), "w"), reset_dir(os.getcwd()), dpg.delete_item(nd)))
-                    dpg.add_button(label="Cancel", width=80, callback=lambda:dpg.delete_item(nd))
-
-
-        def ddf():
-            with dpg.window(label="Delete directory or file", width=350, no_close=True, no_collapse=True, pos=(50, 50)) as nd:
-                dpg.add_input_text(default_value=os.getcwd(), width=-1, hint="Path", tag="ex_ddf")
-                with dpg.group(horizontal=True):
-                    def delete():
-                        try:
-                            if os.path.isdir(dpg.get_value("ex_ddf")):
-                                shutil.rmtree(dpg.get_value("ex_ddf"))
-                            elif os.path.isfile(dpg.get_value("ex_ddf")):
-                                os.remove(dpg.get_value("ex_ddf"))
-                        except FileNotFoundError:
-                            message_box("Invalid path", "No such file or directory")
-                        except PermissionError:
-                            chdir("..")
-                            if os.path.isdir(dpg.get_value("ex_ddf")):
-                                shutil.rmtree(dpg.get_value("ex_ddf"))
-                            elif os.path.isfile(dpg.get_value("ex_ddf")):
-                                os.remove(dpg.get_value("ex_ddf"))
-
-                    dpg.add_button(label="Delete", width=80, callback=lambda:(delete(), reset_dir(os.getcwd()), dpg.delete_item(nd)))
-                    dpg.add_button(label="Cancel", width=80, callback=lambda:dpg.delete_item(nd))
-
         
-        with dpg.window(label="File dialog", tag="file_dialog", no_resize=self.no_resize, show=False, modal=self.modal, width=self.width, height=self.height, min_size=(460, 320)):
+        def on_path_enter():
+            try:
+                chdir(dpg.get_value("ex_path_input"))
+            except FileNotFoundError:
+                message_box("Invalid path", "No such file or directory")
+        
+        def message_box(title, message):
+            if not self.modal:
+                with dpg.mutex():
+                    viewport_width = dpg.get_viewport_client_width()
+                    viewport_height = dpg.get_viewport_client_height()
+                    with dpg.window(label=title, no_close=True, modal=True) as modal_id:
+                        dpg.add_text(message)
+                        with dpg.group(horizontal=True):
+                            dpg.add_button(label="Ok", width=-1, user_data=(modal_id, True), callback=lambda:dpg.delete_item(modal_id))
+
+                dpg.split_frame()
+                width = dpg.get_item_width(modal_id)
+                height = dpg.get_item_height(modal_id)
+                dpg.set_item_pos(modal_id, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])
+            else: print(f"DEV:ERROR:{title}:\t{message}\n\t\t\tCannot display message while file_dialog is in modal")
+        
+        def return_items():
+            dpg.hide_item("file_dialog")
+            if callback == None:
+                pass
+            else:
+                self.callback(self.selected_files)
+            self.selected_files.clear()
+            reset_dir(default_path=self.default_path)
+            self.callback = None
+
+        def open_drive(sender, app_data, user_data):
+            chdir(user_data)
+        
+        def open_file(sender, app_data, user_data):
+            global last_click_time
+            if dpg.is_key_down(dpg.mvKey_Control):
+                if dpg.get_value(sender) == True:
+                    self.selected_files.append(user_data[1])
+                else:
+                    self.selected_files.remove(user_data[1])
+            else:
+                dpg.set_value(sender, False)
+
+                current_time = time.time()
+                if current_time - last_click_time < 0.5:  # adjust the time as needed
+                    #print(f"Selectable {sender} has been double clicked")
+                    if user_data is not None and user_data[1] is not None:
+                        if os.path.isdir(user_data[1]):
+                            #print(f"Content:{dpg.get_item_label(sender)}, files: {user_data}")
+                            chdir(user_data[1])
+                            dpg.set_value("ex_search", "")
+                        elif os.path.isfile(user_data[1]):
+                            self.selected_files.append(user_data[1])
+                            return_items()
+                            return user_data[1]
+                last_click_time = current_time
+
+        def _search():
+            res = dpg.get_value("ex_search")
+            print(res)
+            reset_dir(default_path=os.getcwd(), file_name_filter=res)
+   
+        def _makedir(item, callback, parent="explorer", size=False):
+            file_name = os.path.basename(item)
+
+            creation_time = os.path.getctime(item)
+            creation_time = time.ctime(creation_time)
+
+            item_type = "Dir"
+
+            item_size = get_file_size(item)
+            path = os.getcwd()
+
+            with dpg.table_row(parent=parent):
+                with dpg.group(horizontal=True):
+                    if file_name.endswith((".png", ".jpg")):
+                        dpg.add_image(self.img_picture)
+                    elif item_type == "Dir":
+                        dpg.add_image(self.img_mini_folder)
+                    elif item_type == "File":
+                        dpg.add_image(self.img_mini_document)
+                    
+                    cell_name = dpg.add_selectable(label=file_name, callback=callback, height=self.selec_height, span_columns=True, user_data=[file_name, path+"\\"+file_name])
+                cell_time = dpg.add_selectable(label=creation_time, callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
+                cell_type = dpg.add_selectable(label=item_type, callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
+                cell_size = dpg.add_selectable(label=str(item_size), callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
+
+                if self.allow_drag == True:
+                    drag_payload = dpg.add_drag_payload(parent=cell_name, payload_type=self.PAYLOAD_TYPE)
+                dpg.bind_item_theme(cell_name, selec_alignt)
+                dpg.bind_item_theme(cell_time, selec_alignt)
+                dpg.bind_item_theme(cell_type, selec_alignt)
+                dpg.bind_item_theme(cell_size, size_alignt)
+                if self.allow_drag == True:
+                    if file_name.endswith((".png", ".jpg")):
+                        dpg.add_image(self.img_big_picture, parent=drag_payload)
+                    elif item_type == "Dir":
+                        dpg.add_image(self.img_folder, parent=drag_payload)
+                    elif item_type == "File":
+                        dpg.add_image(self.img_document, parent=drag_payload)
+
+
+        def _makefile(item, callback, parent="explorer"):
+            if self.file_filter == ".*" or item.endswith(self.file_filter):
+                file_name = os.path.basename(item)
+
+                creation_time = os.path.getctime(item)
+                creation_time = time.ctime(creation_time)
+
+                item_type = "File"
+
+                item_size = get_file_size(item)
+                path = os.getcwd()
+
+                with dpg.table_row(parent=parent):
+                    with dpg.group(horizontal=True):
+                        if file_name.endswith((".png", ".jpg")):
+                            dpg.add_image(self.img_picture)
+                        elif item_type == "Dir":
+                            dpg.add_image(self.img_mini_folder)
+                        elif item_type == "File":
+                            dpg.add_image(self.img_mini_document)
+                        
+                        cell_name = dpg.add_selectable(label=file_name, callback=callback, height=self.selec_height, span_columns=True, user_data=[file_name, path+"\\"+file_name])
+                    cell_time = dpg.add_selectable(label=creation_time, callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
+                    cell_type = dpg.add_selectable(label=item_type, callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
+                    cell_size = dpg.add_selectable(label=str(item_size), callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
+
+                    if self.allow_drag == True:
+                        drag_payload = dpg.add_drag_payload(parent=cell_name, payload_type=self.PAYLOAD_TYPE)
+                    dpg.bind_item_theme(cell_name, selec_alignt)
+                    dpg.bind_item_theme(cell_time, selec_alignt)
+                    dpg.bind_item_theme(cell_type, selec_alignt)
+                    dpg.bind_item_theme(cell_size, size_alignt)
+                    if self.allow_drag == True:
+                        if file_name.endswith((".png", ".jpg")):
+                            dpg.add_image(self.img_big_picture, parent=drag_payload)
+                        elif item_type == "Dir":
+                            dpg.add_image(self.img_folder, parent=drag_payload)
+                        elif item_type == "File":
+                            dpg.add_image(self.img_document, parent=drag_payload)
+
+        def _back(sender, app_data, user_data):
+            global last_click_time
+            if dpg.is_key_down(dpg.mvKey_Control):
+                dpg.set_value(sender, False)
+            else:
+                dpg.set_value(sender, False)
+                current_time = time.time()
+                if current_time - last_click_time < 0.5:
+                    dpg.set_value("ex_search", "")
+                    chdir("..")
+                    last_click_time = 0
+                last_click_time = current_time
+
+        def filter_combo_selector(sender, app_data):
+            filter_file = dpg.get_value(sender)
+            self.file_filter = filter_file
+            cwd = os.getcwd()
+            print(cwd)
+            reset_dir(default_path=cwd)
+            
+        def chdir(path):
+            try:
+                os.chdir(path)
+                cwd = os.getcwd()
+                reset_dir(default_path=cwd)
+            except PermissionError as e:
+                message_box("File dialog - PerimssionError", f"Cannot open the folder because is a system folder or the access is denied\n\nMore info:\n{e}")
+        
+        def reset_dir(file_name_filter=None, default_path=self.default_path):
+            global internal
+            def internal():
+                global count, selected_files_int
+                count = 0
+                path = os.getcwd()
+                self.selected_files.clear()
+                try:
+                    _dir = os.listdir(default_path) 
+                    delete_table()
+                    count = 0
+
+                    # 'special directory' that sends back to the other directory
+                    with dpg.table_row(parent="explorer"):
+                        dpg.add_selectable(label="..", callback=_back, span_columns=True, height=self.selec_height)
+                        
+                        # dir list
+                        for file in _dir:
+                            if file_name_filter:
+                                if file.__contains__(dpg.get_value("ex_search")):
+                                    if os.path.isdir(file):
+                                        _makedir(file, open_file)
+                            else:
+                                if os.path.isdir(file):
+                                    _makedir(file, open_file)
+
+                        # file list
+                        for file in _dir:
+                            if not self.dirs_only:
+                                if file_name_filter:
+                                    if file.__contains__(dpg.get_value("ex_search")):
+                                        if os.path.isfile(file):
+                                            _makefile(file, open_file)
+                                else:
+                                    _makefile(file, open_file)
+
+                # exceptions
+                except FileNotFoundError:
+                    print("DEV:ERROR: Invalid path : "+str(default_path))
+                except Exception as e:
+                    message_box("File dialog - Error", f"An unknown error has occured when listing the items, More info:\n{e}")          
+            thread = threading.Thread(target=internal, args=(), daemon=True)
+            thread.start()
+        
+
+
+
+        # main file dialog header
+        with dpg.window(label="File dialog", tag="file_dialog", no_resize=self.no_resize, show=False, modal=self.modal, width=self.width, height=self.height, min_size=self.min_size):
             info_px = 50
 
+            # horizontal group (shot_menu + dir_list)
             with dpg.group(horizontal=True):
-                with dpg.child_window(tag="ex_shortcut", width=200, show=self.show_shortcuts_menu, height=-info_px):
-
-                    def selec_drive(sender, app_data, user_data):
-                        chdir(user_data)
-
-                    drives = get_all_drives()
-                    desktop = os.path.join(os.environ['USERPROFILE'], 'Desktop')
-                    downloads = os.path.join(os.environ['USERPROFILE'], 'Downloads')
-                    images = os.path.join(os.environ['USERPROFILE'], 'Images')
-                    documents = os.path.join(os.environ['USERPROFILE'], 'Documents')
-                    musics = os.path.join(os.environ['USERPROFILE'], 'Musics')
-                    videos = os.path.join(os.environ['USERPROFILE'], 'Videos')
+                # shortcut menu
+                with dpg.child_window(tag="shortcut_menu", width=200, show=self.show_shortcuts_menu, height=-info_px):
+                    desktop = os.path.join(os.path.expanduser('~'), 'Desktop')
+                    downloads = os.path.join(os.path.expanduser('~'), 'Downloads')
+                    images = os.path.join(os.path.expanduser('~'), 'Pictures')  
+                    documents = os.path.join(os.path.expanduser('~'), 'Documents')
+                    musics = os.path.join(os.path.expanduser('~'), 'Music') 
+                    videos = os.path.join(os.path.expanduser('~'), 'Videos')
                     with dpg.group(horizontal=True):
-                        dpg.add_image("desktop")
+                        dpg.add_image(self.img_desktop)
                         dpg.add_menu_item(label="Desktop", callback=lambda:chdir(desktop))
-
                     with dpg.group(horizontal=True):
-                        dpg.add_image("downloads")
+                        dpg.add_image(self.img_downloads)
                         dpg.add_menu_item(label="Downloads", callback=lambda:chdir(downloads))
                     with dpg.group(horizontal=True):
-                        dpg.add_image("picture_folder")
+                        dpg.add_image(self.img_picture_folder)
                         dpg.add_menu_item(label="Images", callback=lambda:chdir(images))
                     with dpg.group(horizontal=True):
-                        dpg.add_image("documents")
+                        dpg.add_image(self.img_document_folder)
                         dpg.add_menu_item(label="Documents", callback=lambda:chdir(documents))
                     with dpg.group(horizontal=True):
-                        dpg.add_image("music")    
+                        dpg.add_image(self.img_music_folder)    
                         dpg.add_menu_item(label="Musics", callback=lambda:chdir(musics))
                     with dpg.group(horizontal=True):
-                        dpg.add_image("videos")
+                        dpg.add_image(self.img_videos)
                         dpg.add_menu_item(label="Videos", callback=lambda:chdir(videos))
                     dpg.add_separator()
-                    with dpg.group(tag="ex_drives"):
+                    
+                    # i/e drives list
+                    with dpg.group():
+                        drives = _get_all_drives()
                         for drive in drives:
                             with dpg.group(horizontal=True):
-                                dpg.add_image("harddisk")
-                                dpg.add_menu_item(label=drive, user_data=drive, callback=selec_drive)
-
-
+                                dpg.add_image(self.img_hard_disk)
+                                dpg.add_menu_item(label=drive, user_data=drive, callback=open_drive)
+                
+                # main explorer header
                 with dpg.group():
-                    def on_path_enter():
-                        try:
-                            chdir(dpg.get_value("ex_path_input"))
-                        except FileNotFoundError:
-                            message_box("Invalid path", "No such file or directory")
 
                     with dpg.group(horizontal=True):
-                        dpg.add_image_button("refresh", tag="ex_refresh", callback=lambda:reset_dir(os.getcwd()))
-                        dpg.add_input_text(hint="Path", on_enter=True, callback=on_path_enter,  default_value=os.getcwd(), width=-1, height=20, tag="ex_path_input")
-                        
-
-                        with dpg.tooltip("ex_refresh"):
-                            dpg.add_text("Refresh the current working directory")
+                        dpg.add_image_button(self.img_refresh, tag="ex_refresh", callback=lambda:reset_dir(default_path=os.getcwd()))
+                        dpg.add_input_text(hint="Path", on_enter=True, callback=on_path_enter,  default_value=os.getcwd(), width=-1, tag="ex_path_input")
 
                     with dpg.group(horizontal=True):
-                        dpg.add_input_text(hint="Search files", width=-34, height=16)
-                        dpg.add_image_button("search", callback=lambda:print("Not implemented yet!"))
+                        dpg.add_input_text(hint="Search files", callback=_search, tag="ex_search", width=-1)
 
+
+                    # main explorer table header
                     with dpg.table(
-                        tag=f'explorer',
+                        tag='explorer',
                         height=-info_px,
                         width=-1,
                         resizable=True, 
@@ -563,13 +500,8 @@ class FileDialog:
                         dpg.add_table_column(label='Date',     init_width_or_weight=iwow_date, tag="ex_date")
                         dpg.add_table_column(label='Type',     init_width_or_weight=iwow_type, tag="ex_type")
                         dpg.add_table_column(label='Size',     init_width_or_weight=iwow_size, width=10, tag="ex_size")
-
-            def filter_combo_selector(sender, app_data):
-                global file_filter
-                filter_file = dpg.get_value(sender)
-                file_filter = filter_file
-                self.file_filter = filter_file
-                reset_dir(".", ffilter=file_filter)
+            
+            
 
             with dpg.group(horizontal=True):
                 dpg.add_spacer(width=50)
@@ -581,78 +513,13 @@ class FileDialog:
                 dpg.add_button(label=" Cancel ", callback=lambda:dpg.hide_item("file_dialog"))
                 
             if self.default_path == "cwd":
-                reset_dir(os.getcwd())
+                chdir(os.getcwd())
             else:
-                reset_dir(self.default_path)
+                chdir(self.default_path)
 
-        def del_files(title, message):
-            #[[
-            # 
-            # This function will delete the selected files
-            # but not completely delete those files,
-            # it will only move them in the recycle bin using send2trash, theoratically
-            # 
-            # ]]
-            def fdel():
-                for file in selected_files:
-                    if os.path.isdir(file):
-                        #shutil.rmtree(file)
-                        send2trash.send2trash(file)
-                    elif os.path.isfile(file):
-                        #os.remove(file)
-                        send2trash.send2trash(file)
-                    else:
-                        message_box("Error - Explorer", f"Error on deleteing {file}, not a directory or file")
-                        return 1
-                return 0
-            with dpg.mutex():
-                viewport_width = dpg.get_viewport_client_width()
-                viewport_height = dpg.get_viewport_client_height()
-                with dpg.window(label=title, modal=True, no_close=False) as modal_id:
-                    dpg.add_text(message)
-                    with dpg.group(horizontal=True):
-                        dpg.add_button(label="Ok", width=18, user_data=(modal_id, True), callback=lambda:(fdel(), reset_dir(".."), dpg.delete_item(modal_id)))
-
-        def del_item_with_del():
-            if dpg.is_key_down(dpg.mvKey_Delete):
-                if selected_files != None:
-                    message_box("Explorer", f"Delete the following Items?\n{selected_files}")
-                
-            
-
-        with dpg.handler_registry():
-            dpg.add_mouse_click_handler(button=dpg.mvMouseButton_X1, callback=lambda:chdir(".."))
-            dpg.add_key_press_handler(callback=del_item_with_del)
-            dpg.add_mouse_double_click_handler(callback=print_file)
+    # high-level functions
+    def show_file_dialog(self):
+        dpg.show_item("file_dialog")
 
     def change_callback(self, callback):
         self.callback = callback
-
-    def show_file_dialog(*args):
-        if len(args) > 0:
-            pass
-        dpg.show_item("file_dialog")
-
-    def change_args(self,
-                    width=None, height=None, dirs_only=None, default_path=None,
-                    file_filter=None, callback=None, show_dir_size=None,
-                    allow_drag=None, multi_selection=None):
-        if width is not None:
-            dpg.set_item_width("file_dialog", width)
-        if height is not None:
-            dpg.set_item_width("file_dialog", height)
-        if dirs_only is not None:
-            self.dirs_only = dirs_only
-        if default_path is not None:
-            self.default_path = default_path
-        if file_filter is not None:
-            self.file_filter = file_filter
-        if callback is not None:
-            self.callback = callback
-        if show_dir_size is not None:
-            self.show_dir_size = show_dir_size
-        if allow_drag is not None:
-            self.allow_drag = allow_drag
-        if multi_selection is not None:
-            self.multi_selection = multi_selection
-
