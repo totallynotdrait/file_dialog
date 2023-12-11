@@ -44,12 +44,7 @@ Note: The file dialog callback can be changed by using ```change_callback()```
 
 # Requirements
 - DearPyGui
-- send2trash (installs automatically if not installed)
-
-# Notes:
-- Some features might not be implemented or they're unfinished
-- file_dialog is created and tested on Windows, some features might not work on other systems
-- bugs or errors may appear when using file_dialog
+- psutil
 
 # Credits
 icons8 - for the 3D Fluency icons - https://icons8.it/icons/3d-fluency
