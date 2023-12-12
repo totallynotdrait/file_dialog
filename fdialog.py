@@ -386,35 +386,42 @@ class FileDialog:
             def internal():
                 self.selected_files.clear()
                 try:
+                    dpg.configure_item("ex_path_input", default_value=os.getcwd())
                     _dir = os.listdir(default_path) 
                     delete_table()
+
+                    # Separate directories and files
+                    dirs = [file for file in _dir if os.path.isdir(file)]
+                    files = [file for file in _dir if os.path.isfile(file)]
 
                     # 'special directory' that sends back to the other directory
                     with dpg.table_row(parent="explorer"):
                         dpg.add_selectable(label="..", callback=_back, span_columns=True, height=self.selec_height)
                         
                         # dir list
-                        for file in _dir:
+                        for file in dirs:
                             if file_name_filter:
                                 if dpg.get_value("ex_search") in file:
-                                    if not self.dirs_only and os.path.isfile(file):
-                                        _makefile(file, open_file)
-                                    if os.path.isdir(file):
-                                        _makedir(file, open_file)
-                            else:
-                                if os.path.isdir(file):
                                     _makedir(file, open_file)
-                                elif not self.dirs_only:
-                                    _makefile(file, open_file)
+                            else:
+                                _makedir(file, open_file)
 
-                    dpg.configure_item("ex_path_input", default_value=os.getcwd())
+                        if not self.dirs_only:
+                            for file in files:
+                                if file_name_filter:
+                                    if dpg.get_value("ex_search") in file:
+                                        _makefile(file, open_file)
+                                else:
+                                    _makefile(file, open_file)
 
                 # exceptions
                 except FileNotFoundError:
                     print("DEV:ERROR: Invalid path : "+str(default_path))
                 except Exception as e:
                     message_box("File dialog - Error", f"An unknown error has occured when listing the items, More info:\n{e}")          
+
             internal()
+
 
 
         # main file dialog header
