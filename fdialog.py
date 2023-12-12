@@ -2,7 +2,6 @@ import dearpygui.dearpygui as dpg
 import os
 import time
 import psutil
-import threading
 
 last_click_time = 0
 
@@ -384,16 +383,11 @@ class FileDialog:
                 message_box("File dialog - PerimssionError", f"Cannot open the folder because is a system folder or the access is denied\n\nMore info:\n{e}")
         
         def reset_dir(file_name_filter=None, default_path=self.default_path):
-            global internal
             def internal():
-                global count, selected_files_int
-                count = 0
-                path = os.getcwd()
                 self.selected_files.clear()
                 try:
                     _dir = os.listdir(default_path) 
                     delete_table()
-                    count = 0
 
                     # 'special directory' that sends back to the other directory
                     with dpg.table_row(parent="explorer"):
@@ -420,8 +414,7 @@ class FileDialog:
                     print("DEV:ERROR: Invalid path : "+str(default_path))
                 except Exception as e:
                     message_box("File dialog - Error", f"An unknown error has occured when listing the items, More info:\n{e}")          
-            thread = threading.Thread(target=internal, args=(), daemon=True)
-            thread.start()
+            internal()
 
 
         # main file dialog header
