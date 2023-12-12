@@ -4,13 +4,14 @@ import time
 import psutil
 import threading
 
-
 last_click_time = 0
+
 
 class FileDialog:
     """
     Arguments:
         title:                  Sets the file dialog window name
+        tag:                    Sets the file dialog tag
         width:                  Sets the file dialog window width
         height:                 Sets the file dialog window height
         min_size:               Sets the file dialog minimum size
@@ -20,7 +21,7 @@ class FileDialog:
         callback:               When the Ok button has pressed it will call the defined function
         show_dir_size:          When true it will list the directories with the size of the directory and its sub-directories and files (reccomended to False)
         allow_drag:             When true it will allow to the user to drag the file or folder to a group
-        multi_selction:         If true it will allow the user to select multiple files and folder
+        multi_selection:         If true it will allow the user to select multiple files and folder
         show_shortcuts_menu:    A child window containing different shortcuts (like desktop and downloads) and of the esternal and internal drives
         no_resize:              When true the window will not be able to resize
         modal:                  A sort of popup effect (can cause problems when the file dialog is activated by a modal window)
@@ -30,6 +31,7 @@ class FileDialog:
     def __init__(
         self,
         title="File dialog",
+        tag="file_dialog",
         width=950,
         height=650,
         min_size=(460, 320),
@@ -47,6 +49,7 @@ class FileDialog:
         
         # args
         self.title = title
+        self.tag = tag
         self.width = width
         self.height = height
         self.min_size = min_size
@@ -61,7 +64,7 @@ class FileDialog:
         self.no_resize = no_resize
         self.modal = modal
 
-        self.PAYLOAD_TYPE = 'ws_file_dialog'
+        self.PAYLOAD_TYPE = 'ws_' + self.tag
         self.selected_files = []
         self.selec_height = 16
         
@@ -220,17 +223,18 @@ class FileDialog:
                     with dpg.window(label=title, no_close=True, modal=True) as modal_id:
                         dpg.add_text(message)
                         with dpg.group(horizontal=True):
-                            dpg.add_button(label="Ok", width=-1, user_data=(modal_id, True), callback=lambda:dpg.delete_item(modal_id))
+                            dpg.add_button(label="Ok", width=-1, user_data=(modal_id, True), callback=lambda: dpg.delete_item(modal_id))
 
                 dpg.split_frame()
                 width = dpg.get_item_width(modal_id)
                 height = dpg.get_item_height(modal_id)
                 dpg.set_item_pos(modal_id, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])
-            else: print(f"DEV:ERROR:{title}:\t{message}\n\t\t\tCannot display message while file_dialog is in modal")
+            else:
+                print(f"DEV:ERROR:{title}:\t{message}\n\t\t\tCannot display message while file_dialog is in modal")
         
         def return_items():
-            dpg.hide_item("file_dialog")
-            if callback == None:
+            dpg.hide_item(self.tag)
+            if callback is None:
                 pass
             else:
                 self.callback(self.selected_files)
@@ -243,20 +247,21 @@ class FileDialog:
         
         def open_file(sender, app_data, user_data):
             global last_click_time
+            # Multi selection
             if dpg.is_key_down(dpg.mvKey_Control):
-                if dpg.get_value(sender) == True:
+                if dpg.get_value(sender) is True:
                     self.selected_files.append(user_data[1])
                 else:
                     self.selected_files.remove(user_data[1])
+            # Single selection
             else:
                 dpg.set_value(sender, False)
 
                 current_time = time.time()
                 if current_time - last_click_time < 0.5:  # adjust the time as needed
-                    #print(f"Selectable {sender} has been double clicked")
                     if user_data is not None and user_data[1] is not None:
                         if os.path.isdir(user_data[1]):
-                            #print(f"Content:{dpg.get_item_label(sender)}, files: {user_data}")
+                            # print(f"Content:{dpg.get_item_label(sender)}, files: {user_data}")
                             chdir(user_data[1])
                             dpg.set_value("ex_search", "")
                         elif os.path.isfile(user_data[1]):
@@ -279,7 +284,8 @@ class FileDialog:
             item_type = "Dir"
 
             item_size = get_file_size(item)
-            path = os.getcwd()
+
+            kwargs_cell = {'callback': callback, 'span_columns': True, 'height': self.selec_height, 'user_data': [file_name, os.path.join(os.getcwd(), file_name)]}
 
             with dpg.table_row(parent=parent):
                 with dpg.group(horizontal=True):
@@ -290,25 +296,24 @@ class FileDialog:
                     elif item_type == "File":
                         dpg.add_image(self.img_mini_document)
                     
-                    cell_name = dpg.add_selectable(label=file_name, callback=callback, height=self.selec_height, span_columns=True, user_data=[file_name, path+"\\"+file_name])
-                cell_time = dpg.add_selectable(label=creation_time, callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
-                cell_type = dpg.add_selectable(label=item_type, callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
-                cell_size = dpg.add_selectable(label=str(item_size), callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
+                    cell_name = dpg.add_selectable(label=file_name, **kwargs_cell)
+                cell_time = dpg.add_selectable(label=creation_time, **kwargs_cell)
+                cell_type = dpg.add_selectable(label=item_type, **kwargs_cell)
+                cell_size = dpg.add_selectable(label=str(item_size), **kwargs_cell)
 
-                if self.allow_drag == True:
+                if self.allow_drag is True:
                     drag_payload = dpg.add_drag_payload(parent=cell_name, payload_type=self.PAYLOAD_TYPE)
                 dpg.bind_item_theme(cell_name, selec_alignt)
                 dpg.bind_item_theme(cell_time, selec_alignt)
                 dpg.bind_item_theme(cell_type, selec_alignt)
                 dpg.bind_item_theme(cell_size, size_alignt)
-                if self.allow_drag == True:
+                if self.allow_drag is True:
                     if file_name.endswith((".png", ".jpg")):
                         dpg.add_image(self.img_big_picture, parent=drag_payload)
                     elif item_type == "Dir":
                         dpg.add_image(self.img_folder, parent=drag_payload)
                     elif item_type == "File":
                         dpg.add_image(self.img_document, parent=drag_payload)
-
 
         def _makefile(item, callback, parent="explorer"):
             if self.file_filter == ".*" or item.endswith(self.file_filter):
@@ -320,7 +325,7 @@ class FileDialog:
                 item_type = "File"
 
                 item_size = get_file_size(item)
-                path = os.getcwd()
+                kwargs_cell = {'callback': callback, 'span_columns': True, 'height': self.selec_height, 'user_data': [file_name, os.path.join(os.getcwd(), file_name)]}
 
                 with dpg.table_row(parent=parent):
                     with dpg.group(horizontal=True):
@@ -331,18 +336,18 @@ class FileDialog:
                         elif item_type == "File":
                             dpg.add_image(self.img_mini_document)
                         
-                        cell_name = dpg.add_selectable(label=file_name, callback=callback, height=self.selec_height, span_columns=True, user_data=[file_name, path+"\\"+file_name])
-                    cell_time = dpg.add_selectable(label=creation_time, callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
-                    cell_type = dpg.add_selectable(label=item_type, callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
-                    cell_size = dpg.add_selectable(label=str(item_size), callback=callback, span_columns=True, height=self.selec_height, user_data=[file_name, path+"\\"+file_name])
+                        cell_name = dpg.add_selectable(label=file_name, **kwargs_cell)
+                    cell_time = dpg.add_selectable(label=creation_time, **kwargs_cell)
+                    cell_type = dpg.add_selectable(label=item_type, **kwargs_cell)
+                    cell_size = dpg.add_selectable(label=str(item_size), **kwargs_cell)
 
-                    if self.allow_drag == True:
+                    if self.allow_drag is True:
                         drag_payload = dpg.add_drag_payload(parent=cell_name, payload_type=self.PAYLOAD_TYPE)
                     dpg.bind_item_theme(cell_name, selec_alignt)
                     dpg.bind_item_theme(cell_time, selec_alignt)
                     dpg.bind_item_theme(cell_type, selec_alignt)
                     dpg.bind_item_theme(cell_size, size_alignt)
-                    if self.allow_drag == True:
+                    if self.allow_drag is True:
                         if file_name.endswith((".png", ".jpg")):
                             dpg.add_image(self.img_big_picture, parent=drag_payload)
                         elif item_type == "Dir":
@@ -397,22 +402,17 @@ class FileDialog:
                         # dir list
                         for file in _dir:
                             if file_name_filter:
-                                if file.__contains__(dpg.get_value("ex_search")):
+                                if dpg.get_value("ex_search") in file:
+                                    if not self.dirs_only and os.path.isfile(file):
+                                        _makefile(file, open_file)
                                     if os.path.isdir(file):
                                         _makedir(file, open_file)
                             else:
                                 if os.path.isdir(file):
                                     _makedir(file, open_file)
-
-                        # file list
-                        for file in _dir:
-                            if not self.dirs_only:
-                                if file_name_filter:
-                                    if file.__contains__(dpg.get_value("ex_search")):
-                                        if os.path.isfile(file):
-                                            _makefile(file, open_file)
-                                else:
+                                elif not self.dirs_only:
                                     _makefile(file, open_file)
+
                     dpg.configure_item("ex_path_input", default_value=os.getcwd())
 
                 # exceptions
@@ -422,12 +422,10 @@ class FileDialog:
                     message_box("File dialog - Error", f"An unknown error has occured when listing the items, More info:\n{e}")          
             thread = threading.Thread(target=internal, args=(), daemon=True)
             thread.start()
-        
-
 
 
         # main file dialog header
-        with dpg.window(label="File dialog", tag="file_dialog", no_resize=self.no_resize, show=False, modal=self.modal, width=self.width, height=self.height, min_size=self.min_size):
+        with dpg.window(label="File dialog", tag=self.tag, no_resize=self.no_resize, show=False, modal=self.modal, width=self.width, height=self.height, min_size=self.min_size, no_collapse=True):
             info_px = 50
 
             # horizontal group (shot_menu + dir_list)
@@ -501,17 +499,16 @@ class FileDialog:
                         dpg.add_table_column(label='Date',     init_width_or_weight=iwow_date, tag="ex_date")
                         dpg.add_table_column(label='Type',     init_width_or_weight=iwow_type, tag="ex_type")
                         dpg.add_table_column(label='Size',     init_width_or_weight=iwow_size, width=10, tag="ex_size")
-            
-            
 
             with dpg.group(horizontal=True):
                 dpg.add_spacer(width=50)
                 dpg.add_text('File type filter')
-                dpg.add_combo(items=[".*", ".exe", ".py", ".png", ".jpg", ".jpeg", ".wav", ".mp3", ".ogg", ".mp4", ".txt", ".c", ".cpp", ".cs", ".h", ".pyl", ".phs", ".js", "json", ".rs", ".vbs", ".ini", ".ppack", ".fbx", ".obj", ".mlt", ".bat", ".sh"], callback=filter_combo_selector, default_value=".*", width=-1)
+                dpg.add_combo(items=[".*", ".exe", ".py", ".bin", ".png", ".jpg", ".jpeg", ".wav", ".mp3", ".ogg", ".mp4", ".txt", ".c", ".cpp", ".cs", ".h", ".pyl", ".phs", ".js", "json", ".rs", ".vbs", ".ini", ".ppack", ".fbx", ".obj", ".mlt", ".bat", ".sh"],
+                              callback=filter_combo_selector, default_value=self.file_filter, width=-1)
             with dpg.group(horizontal=True):
-                dpg.add_spacer(width=self.width*0.82)
+                dpg.add_spacer(width=int(self.width*0.82))
                 dpg.add_button(label="   OK   ", callback=return_items)
-                dpg.add_button(label=" Cancel ", callback=lambda:dpg.hide_item("file_dialog"))
+                dpg.add_button(label=" Cancel ", callback=lambda: dpg.hide_item(self.tag))
                 
             if self.default_path == "cwd":
                 chdir(os.getcwd())
@@ -520,7 +517,7 @@ class FileDialog:
 
     # high-level functions
     def show_file_dialog(self):
-        dpg.show_item("file_dialog")
+        dpg.show_item(self.tag)
 
     def change_callback(self, callback):
         self.callback = callback
