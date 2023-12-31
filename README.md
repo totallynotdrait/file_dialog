@@ -36,11 +36,12 @@ Note: The file dialog callback can be changed by using ```change_callback()```
 
 # Features
 - Nice and beautiful interface
-- Modern icons
-- Shortcut menu
-- Drives menu
-- Customization of the the file dialog window
-- Can be used at all time by using ```show_file_dialog()```
+- Modern icons for different file exstensions
+- Shortcut menu with also a list of external and internal drives
+- Complete customization of the file dialog window and it's features
+- Can be used at all time by using ```show_file_dialog()``` function
+- Display hidden files and folders
+- Dragging items
 
 # Requirements
 - DearPyGui
