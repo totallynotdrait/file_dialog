@@ -354,10 +354,14 @@ class FileDialog:
                 directory_path = os.path.join(os.path.expanduser("~"), directory_name)
                 os.listdir(directory_path)
             except FileNotFoundError:
-                directory_path = glob(os.path.expanduser("~\\*\\" + directory_name))[0]
-                try:
-                    os.listdir(directory_path)
-                except FileNotFoundError:
+                directory_path = glob.glob(os.path.expanduser("~/*/" + directory_name))
+                if directory_path:
+                    try:
+                        os.listdir(directory_path[0])
+                    except FileNotFoundError:
+                        message_box("File dialog - Error", "Could not find the selected directory")
+                        return "."
+                else:
                     message_box("File dialog - Error", "Could not find the selected directory")
                     return "."
             return directory_path
