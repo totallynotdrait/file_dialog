@@ -660,11 +660,12 @@ class FileDialog:
             else:
                 dpg.set_value(sender, False)
                 current_time = time.time()
-                if current_time - self.last_click_time < 0.5:
+                if current_time - self.last_click_time < 0.5 and self.last_clicked_element == sender:
                     dpg.set_value("ex_search", "")
                     chdir("..")
                     self.last_click_time = 0
                 self.last_click_time = current_time
+                self.last_clicked_element = sender
 
         def filter_combo_selector(sender, app_data):
             filter_file = dpg.get_value(sender)
