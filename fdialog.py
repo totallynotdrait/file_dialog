@@ -335,12 +335,13 @@ class FileDialog:
             chdir(user_data)
 
         def open_file(sender, app_data, user_data):
-            # Multi selection
-            if dpg.is_key_down(dpg.mvKey_LControl) or dpg.is_key_down(dpg.mvKey_RControl):
-                if dpg.get_value(sender) is True:
-                    self.selected_files.append(user_data[1])
-                else:
-                    self.selected_files.remove(user_data[1])
+            # Multi selection, Allow only when multi_select is picked
+            if self.multi_selection:
+                if dpg.is_key_down(dpg.mvKey_LControl) or dpg.is_key_down(dpg.mvKey_RControl):
+                    if dpg.get_value(sender) is True:
+                        self.selected_files.append(user_data[1])
+                    else:
+                        self.selected_files.remove(user_data[1])
             # Single selection
             else:
                 dpg.set_value(sender, False)
