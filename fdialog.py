@@ -81,6 +81,7 @@ class FileDialog:
         self.selec_height = 16
         self.image_transparency = 100
         self.last_click_time = 0
+        self.last_clicked_element = None
 
         self.fd_img_path = os.path.join(os.path.dirname(__file__), "images")
 
@@ -347,7 +348,7 @@ class FileDialog:
                 dpg.set_value(sender, False)
 
                 current_time = time.time()
-                if current_time - self.last_click_time < 0.5:  # adjust the time as needed
+                if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender):
                     if user_data is not None and user_data[1] is not None:
                         if os.path.isdir(user_data[1]):
                             # print(f"Content:{dpg.get_item_label(sender)}, files: {user_data}")
@@ -362,6 +363,7 @@ class FileDialog:
                                 return_items()
                                 return user_data[1]
                 self.last_click_time = current_time
+                self.last_clicked_element = sender
 
         def _search():
             res = dpg.get_value("ex_search")
