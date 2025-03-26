@@ -345,7 +345,11 @@ class FileDialog:
                         self.selected_files.remove(user_data[1])
             # Single selection
             else:
-                dpg.set_value(sender, False)
+                if len(self.selected_files) > 0:
+                    self.selected_files.clear()
+                    if self.last_clicked_element is not None:
+                        dpg.set_value(self.last_clicked_element, False)
+                dpg.set_value(sender, True)
 
                 current_time = time.time()
                 if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender):
