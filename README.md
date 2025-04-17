@@ -1,7 +1,8 @@
-![pre](https://github.com/totallynotdrait/file_dialog/assets/108739871/9fa6e4b2-adb0-4000-98fe-1e5f7c273abe)
+![immagine](https://github.com/user-attachments/assets/d7e8b25c-bf6b-4b2f-a599-45e96fbf851a)
+
 
 # file_dialog
-file_dialog is a beautiful file dialog add-on for DearPyGui applications
+file_dialog is a nice customizable File Dialog add-on for DearPyGui
 
 example:
 ```python
@@ -31,11 +32,11 @@ dpg.destroy_context()
 Note: The file dialog callback can be changed by using ```change_callback()```
 
 # Installation
-- Download the zip file and extract it
+- Download repository with git ```git clone https://github.com/totallynotdrait/file_dialog``` or download the zip file and extract it
 - Move the file_dialog folder into your project and then import fdialog.py or the FileDialog class
 
 # Features
-- Nice and beautiful interface
+- Nice interface
 - Modern icons for different file exstensions
 - Shortcut menu with also a list of external and internal drives
 - Complete customization of the file dialog window and it's features
