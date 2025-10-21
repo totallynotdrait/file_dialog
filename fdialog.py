@@ -433,15 +433,10 @@ class FileDialog:
                     elif os.path.isfile(user_data[1]):
                         if not len(self.selected_files) > 1:
                             self.selected_files.append(user_data[1])
-                            #If double click on a file
-                            if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender): 
-                                return_items()
-                            return user_data[1]
-                        else:
-                            #If double click on a file
-                            if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender):
-                                return_items()
-                            return user_data[1]
+                        #If double click on a file
+                        if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender): 
+                            return_items()
+                        return user_data[1]
                 self.last_click_time = current_time
                 self.last_clicked_element = sender
 
