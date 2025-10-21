@@ -426,20 +426,22 @@ class FileDialog:
                 dpg.set_value(sender, True)
 
                 current_time = time.time()
-                if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender):
-                    if user_data is not None and user_data[1] is not None:
-                        if os.path.isdir(user_data[1]):
-                            # print(f"Content:{dpg.get_item_label(sender)}, files: {user_data}")
-                            chdir(user_data[1])
-                            dpg.set_value("ex_search", "")
-                        elif os.path.isfile(user_data[1]):
-                            if not len(self.selected_files) > 1:
-                                self.selected_files.append(user_data[1])
+                if user_data is not None and user_data[1] is not None:
+                    if os.path.isdir(user_data[1]):
+                        chdir(user_data[1])
+                        dpg.set_value("ex_search", "")
+                    elif os.path.isfile(user_data[1]):
+                        if not len(self.selected_files) > 1:
+                            self.selected_files.append(user_data[1])
+                            #If double click on a file
+                            if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender): 
                                 return_items()
-                                return user_data[1]
-                            else:
+                            return user_data[1]
+                        else:
+                            #If double click on a file
+                            if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender):
                                 return_items()
-                                return user_data[1]
+                            return user_data[1]
                 self.last_click_time = current_time
                 self.last_clicked_element = sender
 
