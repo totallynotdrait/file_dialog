@@ -429,6 +429,8 @@ class FileDialog:
                     if os.path.isdir(user_data[1]):
                         chdir(user_data[1])
                         dpg.set_value(self.tag+"ex_search", "")
+                        if (self.dirs_only == True): #If click once on directory and dirs_only == True
+                            self.selected_files = [user_data[1]]
                     elif os.path.isfile(user_data[1]):
                         if not len(self.selected_files) > 1:
                             self.selected_files.append(user_data[1])
@@ -736,7 +738,6 @@ class FileDialog:
                 except Exception as e:
                     message_box(
                         "File dialog - Error", f"An unknown error has occured when listing the items, More info:\n{e}")
-                    raise e
 
             internal()
 
@@ -892,8 +893,7 @@ class FileDialog:
 
             with dpg.group(horizontal=True) as btn_ret_grp:
                 dpg.add_spacer(width=int(self.width*0.831))
-                dpg.add_button(label="   OK   ", tag=self.tag +
-                               "_return", callback=return_items)
+                dpg.add_button(label="   OK   ", tag=self.tag + "_return", callback=return_items)
                 dpg.add_button(label=" Cancel ",
                                callback=lambda: dpg.hide_item(self.tag))
 
