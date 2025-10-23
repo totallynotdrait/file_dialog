@@ -207,82 +207,75 @@ class FileDialog:
 
         # high-level
         with dpg.texture_registry():
-            try:
-                dpg.add_static_texture(
-                    width=self.ico_document[0], height=self.ico_document[1], default_value=self.ico_document[2], tag=self.tag+"ico_document")
-                dpg.add_static_texture(
-                    width=self.ico_home[0], height=self.ico_home[1], default_value=self.ico_home[2], tag=self.tag+"ico_home")
-                dpg.add_static_texture(
-                    width=self.ico_add_folder[0], height=self.ico_add_folder[1], default_value=self.ico_add_folder[2], tag=self.tag+"ico_add_folder")
-                dpg.add_static_texture(
-                    width=self.ico_add_file[0], height=self.ico_add_file[1], default_value=self.ico_add_file[2], tag=self.tag+"ico_add_file")
-                dpg.add_static_texture(
-                    width=self.ico_mini_folder[0], height=self.ico_mini_folder[1], default_value=self.ico_mini_folder[2], tag=self.tag+"ico_mini_folder")
-                dpg.add_static_texture(
-                    width=self.ico_folder[0], height=self.ico_folder[1], default_value=self.ico_folder[2], tag=self.tag+"ico_folder")
-                dpg.add_static_texture(width=self.ico_mini_document[0], height=self.ico_mini_document[1],
-                                       default_value=self.ico_mini_document[2], tag=self.tag+"ico_mini_document")
-                dpg.add_static_texture(
-                    width=self.ico_mini_error[0], height=self.ico_mini_error[1], default_value=self.ico_mini_error[2], tag=self.tag+"ico_mini_error")
-                dpg.add_static_texture(
-                    width=self.ico_refresh[0], height=self.ico_refresh[1], default_value=self.ico_refresh[2], tag=self.tag+"ico_refresh")
-                dpg.add_static_texture(
-                    width=self.ico_hard_disk[0], height=self.ico_hard_disk[1], default_value=self.ico_hard_disk[2], tag=self.tag+"ico_hard_disk")
-                dpg.add_static_texture(
-                    width=self.ico_picture[0], height=self.ico_picture[1], default_value=self.ico_picture[2], tag=self.tag+"ico_picture")
-                dpg.add_static_texture(
-                    width=self.ico_big_picture[0], height=self.ico_big_picture[1], default_value=self.ico_big_picture[2], tag=self.tag+"ico_big_picture")
-                dpg.add_static_texture(width=self.ico_picture_folder[0], height=self.ico_picture_folder[1],
-                                       default_value=self.ico_picture_folder[2], tag=self.tag+"ico_picture_folder")
-                dpg.add_static_texture(
-                    width=self.ico_desktop[0], height=self.ico_desktop[1], default_value=self.ico_desktop[2], tag=self.tag+"ico_desktop")
-                dpg.add_static_texture(
-                    width=self.ico_videos[0], height=self.ico_videos[1], default_value=self.ico_videos[2], tag=self.tag+"ico_videos")
-                dpg.add_static_texture(
-                    width=self.ico_music_folder[0], height=self.ico_music_folder[1], default_value=self.ico_music_folder[2], tag=self.tag+"ico_music_folder")
-                dpg.add_static_texture(
-                    width=self.ico_downloads[0], height=self.ico_downloads[1], default_value=self.ico_downloads[2], tag=self.tag+"ico_downloads")
-                dpg.add_static_texture(width=self.ico_document_folder[0], height=self.ico_document_folder[1],
-                                       default_value=self.ico_document_folder[2], tag=self.tag+"ico_document_folder")
-                dpg.add_static_texture(
-                    width=self.ico_search[0], height=self.ico_search[1], default_value=self.ico_search[2], tag=self.tag+"ico_search")
-                dpg.add_static_texture(
-                    width=self.ico_back[0], height=self.ico_back[1], default_value=self.ico_back[2], tag=self.tag+"ico_back")
-                dpg.add_static_texture(
-                    width=self.ico_c[0], height=self.ico_c[1], default_value=self.ico_c[2], tag=self.tag+"ico_c")
-                dpg.add_static_texture(
-                    width=self.ico_gears[0], height=self.ico_gears[1], default_value=self.ico_gears[2], tag=self.tag+"ico_gears")
-                dpg.add_static_texture(
-                    width=self.ico_music_note[0], height=self.ico_music_note[1], default_value=self.ico_music_note[2], tag=self.tag+"ico_music_note")
-                dpg.add_static_texture(
-                    width=self.ico_note[0], height=self.ico_note[1], default_value=self.ico_note[2], tag=self.tag+"ico_note")
-                dpg.add_static_texture(
-                    width=self.ico_object[0], height=self.ico_object[1], default_value=self.ico_object[2], tag=self.tag+"ico_object")
-                dpg.add_static_texture(
-                    width=self.ico_python[0], height=self.ico_python[1], default_value=self.ico_python[2], tag=self.tag+"ico_python")
-                dpg.add_static_texture(
-                    width=self.ico_script[0], height=self.ico_script[1], default_value=self.ico_script[2], tag=self.tag+"ico_script")
-                dpg.add_static_texture(
-                    width=self.ico_video[0], height=self.ico_video[1], default_value=self.ico_video[2], tag=self.tag+"ico_video")
-                dpg.add_static_texture(
-                    width=self.ico_link[0], height=self.ico_link[1], default_value=self.ico_link[2], tag=self.tag+"ico_link")
-                dpg.add_static_texture(
-                    width=self.ico_url[0], height=self.ico_url[1], default_value=self.ico_url[2], tag=self.tag+"ico_url")
-                dpg.add_static_texture(
-                    width=self.ico_vector[0], height=self.ico_vector[1], default_value=self.ico_vector[2], tag=self.tag+"ico_vector")
-                dpg.add_static_texture(
-                    width=self.ico_zip[0], height=self.ico_zip[1], default_value=self.ico_zip[2], tag=self.tag+"ico_zip")
-                dpg.add_static_texture(
-                    width=self.ico_app[0], height=self.ico_app[1], default_value=self.ico_app[2], tag=self.tag+"ico_app")
-                dpg.add_static_texture(
-                    width=self.ico_iso[0], height=self.ico_iso[1], default_value=self.ico_iso[2], tag=self.tag+"ico_iso")
-            except SystemError as e:
-                msg = str(e)
-                if "<built-in function add_static_texture> returned a result with an exception set" in msg:
-                    print("Ignoring duplicate alias error.")
-                else:
-                    raise
-
+            dpg.add_static_texture(
+                width=self.ico_document[0], height=self.ico_document[1], default_value=self.ico_document[2], tag=self.tag+"ico_document")
+            dpg.add_static_texture(
+                width=self.ico_home[0], height=self.ico_home[1], default_value=self.ico_home[2], tag=self.tag+"ico_home")
+            dpg.add_static_texture(
+                width=self.ico_add_folder[0], height=self.ico_add_folder[1], default_value=self.ico_add_folder[2], tag=self.tag+"ico_add_folder")
+            dpg.add_static_texture(
+                width=self.ico_add_file[0], height=self.ico_add_file[1], default_value=self.ico_add_file[2], tag=self.tag+"ico_add_file")
+            dpg.add_static_texture(
+                width=self.ico_mini_folder[0], height=self.ico_mini_folder[1], default_value=self.ico_mini_folder[2], tag=self.tag+"ico_mini_folder")
+            dpg.add_static_texture(
+                width=self.ico_folder[0], height=self.ico_folder[1], default_value=self.ico_folder[2], tag=self.tag+"ico_folder")
+            dpg.add_static_texture(width=self.ico_mini_document[0], height=self.ico_mini_document[1],
+                                   default_value=self.ico_mini_document[2], tag=self.tag+"ico_mini_document")
+            dpg.add_static_texture(
+                width=self.ico_mini_error[0], height=self.ico_mini_error[1], default_value=self.ico_mini_error[2], tag=self.tag+"ico_mini_error")
+            dpg.add_static_texture(
+                width=self.ico_refresh[0], height=self.ico_refresh[1], default_value=self.ico_refresh[2], tag=self.tag+"ico_refresh")
+            dpg.add_static_texture(
+                width=self.ico_hard_disk[0], height=self.ico_hard_disk[1], default_value=self.ico_hard_disk[2], tag=self.tag+"ico_hard_disk")
+            dpg.add_static_texture(
+                width=self.ico_picture[0], height=self.ico_picture[1], default_value=self.ico_picture[2], tag=self.tag+"ico_picture")
+            dpg.add_static_texture(
+                width=self.ico_big_picture[0], height=self.ico_big_picture[1], default_value=self.ico_big_picture[2], tag=self.tag+"ico_big_picture")
+            dpg.add_static_texture(width=self.ico_picture_folder[0], height=self.ico_picture_folder[1],
+                                   default_value=self.ico_picture_folder[2], tag=self.tag+"ico_picture_folder")
+            dpg.add_static_texture(
+                width=self.ico_desktop[0], height=self.ico_desktop[1], default_value=self.ico_desktop[2], tag=self.tag+"ico_desktop")
+            dpg.add_static_texture(
+                width=self.ico_videos[0], height=self.ico_videos[1], default_value=self.ico_videos[2], tag=self.tag+"ico_videos")
+            dpg.add_static_texture(
+                width=self.ico_music_folder[0], height=self.ico_music_folder[1], default_value=self.ico_music_folder[2], tag=self.tag+"ico_music_folder")
+            dpg.add_static_texture(
+                width=self.ico_downloads[0], height=self.ico_downloads[1], default_value=self.ico_downloads[2], tag=self.tag+"ico_downloads")
+            dpg.add_static_texture(width=self.ico_document_folder[0], height=self.ico_document_folder[1],
+                                   default_value=self.ico_document_folder[2], tag=self.tag+"ico_document_folder")
+            dpg.add_static_texture(
+                width=self.ico_search[0], height=self.ico_search[1], default_value=self.ico_search[2], tag=self.tag+"ico_search")
+            dpg.add_static_texture(
+                width=self.ico_back[0], height=self.ico_back[1], default_value=self.ico_back[2], tag=self.tag+"ico_back")
+            dpg.add_static_texture(
+                width=self.ico_c[0], height=self.ico_c[1], default_value=self.ico_c[2], tag=self.tag+"ico_c")
+            dpg.add_static_texture(
+                width=self.ico_gears[0], height=self.ico_gears[1], default_value=self.ico_gears[2], tag=self.tag+"ico_gears")
+            dpg.add_static_texture(
+                width=self.ico_music_note[0], height=self.ico_music_note[1], default_value=self.ico_music_note[2], tag=self.tag+"ico_music_note")
+            dpg.add_static_texture(
+                width=self.ico_note[0], height=self.ico_note[1], default_value=self.ico_note[2], tag=self.tag+"ico_note")
+            dpg.add_static_texture(
+                width=self.ico_object[0], height=self.ico_object[1], default_value=self.ico_object[2], tag=self.tag+"ico_object")
+            dpg.add_static_texture(
+                width=self.ico_python[0], height=self.ico_python[1], default_value=self.ico_python[2], tag=self.tag+"ico_python")
+            dpg.add_static_texture(
+                width=self.ico_script[0], height=self.ico_script[1], default_value=self.ico_script[2], tag=self.tag+"ico_script")
+            dpg.add_static_texture(
+                width=self.ico_video[0], height=self.ico_video[1], default_value=self.ico_video[2], tag=self.tag+"ico_video")
+            dpg.add_static_texture(
+                width=self.ico_link[0], height=self.ico_link[1], default_value=self.ico_link[2], tag=self.tag+"ico_link")
+            dpg.add_static_texture(
+                width=self.ico_url[0], height=self.ico_url[1], default_value=self.ico_url[2], tag=self.tag+"ico_url")
+            dpg.add_static_texture(
+                width=self.ico_vector[0], height=self.ico_vector[1], default_value=self.ico_vector[2], tag=self.tag+"ico_vector")
+            dpg.add_static_texture(
+                width=self.ico_zip[0], height=self.ico_zip[1], default_value=self.ico_zip[2], tag=self.tag+"ico_zip")
+            dpg.add_static_texture(
+                width=self.ico_app[0], height=self.ico_app[1], default_value=self.ico_app[2], tag=self.tag+"ico_app")
+            dpg.add_static_texture(
+                width=self.ico_iso[0], height=self.ico_iso[1], default_value=self.ico_iso[2], tag=self.tag+"ico_iso")
+            
             self.img_document= self.tag + "ico_document"
             self.img_home= self.tag + "ico_home"
             self.img_add_folder= self.tag + "ico_add_folder"
@@ -756,7 +749,7 @@ class FileDialog:
                 reset_dir(os.getcwd(), witem="date", order=user_data[0][1])
             elif (thingforsort == 3): # size
                 reset_dir(os.getcwd(), witem="size", order=user_data[0][1])
- """
+         """
 
         # main file dialog header
         with dpg.window(label="File dialog", tag=self.tag, no_resize=self.no_resize, show=False, modal=self.modal, width=self.width, height=self.height, min_size=self.min_size, no_collapse=True, pos=(50, 50)):
