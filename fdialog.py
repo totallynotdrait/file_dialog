@@ -207,110 +207,116 @@ class FileDialog:
 
         # high-level
         with dpg.texture_registry():
-            dpg.add_static_texture(
-                width=self.ico_document[0], height=self.ico_document[1], default_value=self.ico_document[2], tag="ico_document")
-            dpg.add_static_texture(
-                width=self.ico_home[0], height=self.ico_home[1], default_value=self.ico_home[2], tag="ico_home")
-            dpg.add_static_texture(
-                width=self.ico_add_folder[0], height=self.ico_add_folder[1], default_value=self.ico_add_folder[2], tag="ico_add_folder")
-            dpg.add_static_texture(
-                width=self.ico_add_file[0], height=self.ico_add_file[1], default_value=self.ico_add_file[2], tag="ico_add_file")
-            dpg.add_static_texture(
-                width=self.ico_mini_folder[0], height=self.ico_mini_folder[1], default_value=self.ico_mini_folder[2], tag="ico_mini_folder")
-            dpg.add_static_texture(
-                width=self.ico_folder[0], height=self.ico_folder[1], default_value=self.ico_folder[2], tag="ico_folder")
-            dpg.add_static_texture(width=self.ico_mini_document[0], height=self.ico_mini_document[1],
-                                   default_value=self.ico_mini_document[2], tag="ico_mini_document")
-            dpg.add_static_texture(
-                width=self.ico_mini_error[0], height=self.ico_mini_error[1], default_value=self.ico_mini_error[2], tag="ico_mini_error")
-            dpg.add_static_texture(
-                width=self.ico_refresh[0], height=self.ico_refresh[1], default_value=self.ico_refresh[2], tag="ico_refresh")
-            dpg.add_static_texture(
-                width=self.ico_hard_disk[0], height=self.ico_hard_disk[1], default_value=self.ico_hard_disk[2], tag="ico_hard_disk")
-            dpg.add_static_texture(
-                width=self.ico_picture[0], height=self.ico_picture[1], default_value=self.ico_picture[2], tag="ico_picture")
-            dpg.add_static_texture(
-                width=self.ico_big_picture[0], height=self.ico_big_picture[1], default_value=self.ico_big_picture[2], tag="ico_big_picture")
-            dpg.add_static_texture(width=self.ico_picture_folder[0], height=self.ico_picture_folder[1],
-                                   default_value=self.ico_picture_folder[2], tag="ico_picture_folder")
-            dpg.add_static_texture(
-                width=self.ico_desktop[0], height=self.ico_desktop[1], default_value=self.ico_desktop[2], tag="ico_desktop")
-            dpg.add_static_texture(
-                width=self.ico_videos[0], height=self.ico_videos[1], default_value=self.ico_videos[2], tag="ico_videos")
-            dpg.add_static_texture(
-                width=self.ico_music_folder[0], height=self.ico_music_folder[1], default_value=self.ico_music_folder[2], tag="ico_music_folder")
-            dpg.add_static_texture(
-                width=self.ico_downloads[0], height=self.ico_downloads[1], default_value=self.ico_downloads[2], tag="ico_downloads")
-            dpg.add_static_texture(width=self.ico_document_folder[0], height=self.ico_document_folder[1],
-                                   default_value=self.ico_document_folder[2], tag="ico_document_folder")
-            dpg.add_static_texture(
-                width=self.ico_search[0], height=self.ico_search[1], default_value=self.ico_search[2], tag="ico_search")
-            dpg.add_static_texture(
-                width=self.ico_back[0], height=self.ico_back[1], default_value=self.ico_back[2], tag="ico_back")
-            dpg.add_static_texture(
-                width=self.ico_c[0], height=self.ico_c[1], default_value=self.ico_c[2], tag="ico_c")
-            dpg.add_static_texture(
-                width=self.ico_gears[0], height=self.ico_gears[1], default_value=self.ico_gears[2], tag="ico_gears")
-            dpg.add_static_texture(
-                width=self.ico_music_note[0], height=self.ico_music_note[1], default_value=self.ico_music_note[2], tag="ico_music_note")
-            dpg.add_static_texture(
-                width=self.ico_note[0], height=self.ico_note[1], default_value=self.ico_note[2], tag="ico_note")
-            dpg.add_static_texture(
-                width=self.ico_object[0], height=self.ico_object[1], default_value=self.ico_object[2], tag="ico_object")
-            dpg.add_static_texture(
-                width=self.ico_python[0], height=self.ico_python[1], default_value=self.ico_python[2], tag="ico_python")
-            dpg.add_static_texture(
-                width=self.ico_script[0], height=self.ico_script[1], default_value=self.ico_script[2], tag="ico_script")
-            dpg.add_static_texture(
-                width=self.ico_video[0], height=self.ico_video[1], default_value=self.ico_video[2], tag="ico_video")
-            dpg.add_static_texture(
-                width=self.ico_link[0], height=self.ico_link[1], default_value=self.ico_link[2], tag="ico_link")
-            dpg.add_static_texture(
-                width=self.ico_url[0], height=self.ico_url[1], default_value=self.ico_url[2], tag="ico_url")
-            dpg.add_static_texture(
-                width=self.ico_vector[0], height=self.ico_vector[1], default_value=self.ico_vector[2], tag="ico_vector")
-            dpg.add_static_texture(
-                width=self.ico_zip[0], height=self.ico_zip[1], default_value=self.ico_zip[2], tag="ico_zip")
-            dpg.add_static_texture(
-                width=self.ico_app[0], height=self.ico_app[1], default_value=self.ico_app[2], tag="ico_app")
-            dpg.add_static_texture(
-                width=self.ico_iso[0], height=self.ico_iso[1], default_value=self.ico_iso[2], tag="ico_iso")
+            try:
+                dpg.add_static_texture(
+                    width=self.ico_document[0], height=self.ico_document[1], default_value=self.ico_document[2], tag=self.tag+"ico_document")
+                dpg.add_static_texture(
+                    width=self.ico_home[0], height=self.ico_home[1], default_value=self.ico_home[2], tag=self.tag+"ico_home")
+                dpg.add_static_texture(
+                    width=self.ico_add_folder[0], height=self.ico_add_folder[1], default_value=self.ico_add_folder[2], tag=self.tag+"ico_add_folder")
+                dpg.add_static_texture(
+                    width=self.ico_add_file[0], height=self.ico_add_file[1], default_value=self.ico_add_file[2], tag=self.tag+"ico_add_file")
+                dpg.add_static_texture(
+                    width=self.ico_mini_folder[0], height=self.ico_mini_folder[1], default_value=self.ico_mini_folder[2], tag=self.tag+"ico_mini_folder")
+                dpg.add_static_texture(
+                    width=self.ico_folder[0], height=self.ico_folder[1], default_value=self.ico_folder[2], tag=self.tag+"ico_folder")
+                dpg.add_static_texture(width=self.ico_mini_document[0], height=self.ico_mini_document[1],
+                                       default_value=self.ico_mini_document[2], tag=self.tag+"ico_mini_document")
+                dpg.add_static_texture(
+                    width=self.ico_mini_error[0], height=self.ico_mini_error[1], default_value=self.ico_mini_error[2], tag=self.tag+"ico_mini_error")
+                dpg.add_static_texture(
+                    width=self.ico_refresh[0], height=self.ico_refresh[1], default_value=self.ico_refresh[2], tag=self.tag+"ico_refresh")
+                dpg.add_static_texture(
+                    width=self.ico_hard_disk[0], height=self.ico_hard_disk[1], default_value=self.ico_hard_disk[2], tag=self.tag+"ico_hard_disk")
+                dpg.add_static_texture(
+                    width=self.ico_picture[0], height=self.ico_picture[1], default_value=self.ico_picture[2], tag=self.tag+"ico_picture")
+                dpg.add_static_texture(
+                    width=self.ico_big_picture[0], height=self.ico_big_picture[1], default_value=self.ico_big_picture[2], tag=self.tag+"ico_big_picture")
+                dpg.add_static_texture(width=self.ico_picture_folder[0], height=self.ico_picture_folder[1],
+                                       default_value=self.ico_picture_folder[2], tag=self.tag+"ico_picture_folder")
+                dpg.add_static_texture(
+                    width=self.ico_desktop[0], height=self.ico_desktop[1], default_value=self.ico_desktop[2], tag=self.tag+"ico_desktop")
+                dpg.add_static_texture(
+                    width=self.ico_videos[0], height=self.ico_videos[1], default_value=self.ico_videos[2], tag=self.tag+"ico_videos")
+                dpg.add_static_texture(
+                    width=self.ico_music_folder[0], height=self.ico_music_folder[1], default_value=self.ico_music_folder[2], tag=self.tag+"ico_music_folder")
+                dpg.add_static_texture(
+                    width=self.ico_downloads[0], height=self.ico_downloads[1], default_value=self.ico_downloads[2], tag=self.tag+"ico_downloads")
+                dpg.add_static_texture(width=self.ico_document_folder[0], height=self.ico_document_folder[1],
+                                       default_value=self.ico_document_folder[2], tag=self.tag+"ico_document_folder")
+                dpg.add_static_texture(
+                    width=self.ico_search[0], height=self.ico_search[1], default_value=self.ico_search[2], tag=self.tag+"ico_search")
+                dpg.add_static_texture(
+                    width=self.ico_back[0], height=self.ico_back[1], default_value=self.ico_back[2], tag=self.tag+"ico_back")
+                dpg.add_static_texture(
+                    width=self.ico_c[0], height=self.ico_c[1], default_value=self.ico_c[2], tag=self.tag+"ico_c")
+                dpg.add_static_texture(
+                    width=self.ico_gears[0], height=self.ico_gears[1], default_value=self.ico_gears[2], tag=self.tag+"ico_gears")
+                dpg.add_static_texture(
+                    width=self.ico_music_note[0], height=self.ico_music_note[1], default_value=self.ico_music_note[2], tag=self.tag+"ico_music_note")
+                dpg.add_static_texture(
+                    width=self.ico_note[0], height=self.ico_note[1], default_value=self.ico_note[2], tag=self.tag+"ico_note")
+                dpg.add_static_texture(
+                    width=self.ico_object[0], height=self.ico_object[1], default_value=self.ico_object[2], tag=self.tag+"ico_object")
+                dpg.add_static_texture(
+                    width=self.ico_python[0], height=self.ico_python[1], default_value=self.ico_python[2], tag=self.tag+"ico_python")
+                dpg.add_static_texture(
+                    width=self.ico_script[0], height=self.ico_script[1], default_value=self.ico_script[2], tag=self.tag+"ico_script")
+                dpg.add_static_texture(
+                    width=self.ico_video[0], height=self.ico_video[1], default_value=self.ico_video[2], tag=self.tag+"ico_video")
+                dpg.add_static_texture(
+                    width=self.ico_link[0], height=self.ico_link[1], default_value=self.ico_link[2], tag=self.tag+"ico_link")
+                dpg.add_static_texture(
+                    width=self.ico_url[0], height=self.ico_url[1], default_value=self.ico_url[2], tag=self.tag+"ico_url")
+                dpg.add_static_texture(
+                    width=self.ico_vector[0], height=self.ico_vector[1], default_value=self.ico_vector[2], tag=self.tag+"ico_vector")
+                dpg.add_static_texture(
+                    width=self.ico_zip[0], height=self.ico_zip[1], default_value=self.ico_zip[2], tag=self.tag+"ico_zip")
+                dpg.add_static_texture(
+                    width=self.ico_app[0], height=self.ico_app[1], default_value=self.ico_app[2], tag=self.tag+"ico_app")
+                dpg.add_static_texture(
+                    width=self.ico_iso[0], height=self.ico_iso[1], default_value=self.ico_iso[2], tag=self.tag+"ico_iso")
+            except SystemError as e:
+                msg = str(e)
+                if "<built-in function add_static_texture> returned a result with an exception set" in msg:
+                    print("Ignoring duplicate alias error.")
+                else:
+                    raise
 
-            self.img_document = "ico_document"
-            self.img_home = "ico_home"
-            self.img_add_folder = "ico_add_folder"
-            self.img_add_file = "ico_add_file"
-            self.img_mini_folder = "ico_mini_folder"
-            self.img_folder = "ico_folder"
-            self.img_mini_document = "ico_mini_document"
-            self.img_mini_error = "ico_mini_error"
-            self.img_refresh = "ico_refresh"
-            self.img_hard_disk = "ico_hard_disk"
-            self.img_picture = "ico_picture"
-            self.img_big_picture = "ico_big_picture"
-            self.img_picture_folder = "ico_picture_folder"
-            self.img_desktop = "ico_desktop"
-            self.img_videos = "ico_videos"
-            self.img_music_folder = "ico_music_folder"
-            self.img_downloads = "ico_downloads"
-            self.img_document_folder = "ico_document_folder"
-            self.img_search = "ico_search"
-            self.img_back = "ico_back"
-            self.img_c = "ico_c"
-            self.img_gears = "ico_gears"
-            self.img_music_note = "ico_music_note"
-            self.img_note = "ico_note"
-            self.img_object = "ico_object"
-            self.img_python = "ico_python"
-            self.img_script = "ico_script"
-            self.img_video = "ico_video"
-            self.img_link = "ico_link"
-            self.img_url = "ico_url"
-            self.img_vector = "ico_vector"
-            self.img_zip = "ico_zip"
-            self.img_app = "ico_app"
-            self.img_iso = "ico_iso"
-
+            self.img_document= self.tag + "ico_document"
+            self.img_home= self.tag + "ico_home"
+            self.img_add_folder= self.tag + "ico_add_folder"
+            self.img_add_file= self.tag + "ico_add_file"
+            self.img_mini_folder= self.tag + "ico_mini_folder"
+            self.img_folder= self.tag + "ico_folder"
+            self.img_mini_document= self.tag + "ico_mini_document"
+            self.img_mini_error= self.tag + "ico_mini_error"
+            self.img_refresh= self.tag + "ico_refresh"
+            self.img_hard_disk= self.tag + "ico_hard_disk"
+            self.img_picture= self.tag + "ico_picture"
+            self.img_big_picture= self.tag + "ico_big_picture"
+            self.img_picture_folder= self.tag + "ico_picture_folder"
+            self.img_desktop= self.tag + "ico_desktop"
+            self.img_videos= self.tag + "ico_videos"
+            self.img_music_folder= self.tag + "ico_music_folder"
+            self.img_downloads= self.tag + "ico_downloads"
+            self.img_document_folder= self.tag + "ico_document_folder"
+            self.img_search= self.tag + "ico_search"
+            self.img_back= self.tag + "ico_back"
+            self.img_c= self.tag + "ico_c"
+            self.img_gears= self.tag + "ico_gears"
+            self.img_music_note= self.tag + "ico_music_note"
+            self.img_note= self.tag + "ico_note"
+            self.img_object= self.tag + "ico_object"
+            self.img_python= self.tag + "ico_python"
+            self.img_script= self.tag + "ico_script"
+            self.img_video= self.tag + "ico_video"
+            self.img_link = self.tag+"ico_link"
+            self.img_url = self.tag+"ico_url"
+            self.img_vector = self.tag+"ico_vector"
+            self.img_zip = self.tag+"ico_zip"
+            self.img_app = self.tag+"ico_app"
+            self.img_iso = self.tag+"ico_iso"
         # low-level functions
 
         def _get_all_drives():
@@ -329,7 +335,7 @@ class FileDialog:
             return drive_list
 
         def delete_table():
-            for child in dpg.get_item_children("explorer", 1):
+            for child in dpg.get_item_children(self.tag+"explorer", 1):
                 dpg.delete_item(child)
 
         def get_file_size(file_path):
@@ -373,7 +379,7 @@ class FileDialog:
 
         def on_path_enter():
             try:
-                chdir(dpg.get_value("ex_path_input"))
+                chdir(dpg.get_value(self.tag+"ex_path_input"))
             except FileNotFoundError:
                 message_box("Invalid path", "No such file or directory")
 
@@ -429,7 +435,7 @@ class FileDialog:
                 if user_data is not None and user_data[1] is not None:
                     if os.path.isdir(user_data[1]):
                         chdir(user_data[1])
-                        dpg.set_value("ex_search", "")
+                        dpg.set_value(self.tag+"ex_search", "")
                     elif os.path.isfile(user_data[1]):
                         if not len(self.selected_files) > 1:
                             self.selected_files.append(user_data[1])
@@ -442,7 +448,7 @@ class FileDialog:
                         return user_data[1]
 
         def _search():
-            res = dpg.get_value("ex_search")
+            res = dpg.get_value(self.tag+"ex_search")
             reset_dir(default_path=os.getcwd(), file_name_filter=res)
 
         def get_directory_path(directory_name):
@@ -495,7 +501,7 @@ class FileDialog:
             except:
                 return False
 
-        def _makedir(item, callback, parent="explorer", size=False):
+        def _makedir(item, callback, parent=self.tag + "explorer", size=False):
             file_name = os.path.basename(item)
 
             creation_time = os.path.getctime(item)
@@ -547,7 +553,7 @@ class FileDialog:
                     elif item_type == "File":
                         dpg.add_image(self.img_document, parent=drag_payload)
 
-        def _makefile(item, callback, parent="explorer"):
+        def _makefile(item, callback, parent=self.tag+"explorer"):
             if self.file_filter == ".*" or item.endswith(self.file_filter):
                 file_name = os.path.basename(item)
 
@@ -561,7 +567,6 @@ class FileDialog:
                     file_name, os.path.join(os.getcwd(), file_name)]}
                 kwargs_file = {'tint_color': [
                     255, 255, 255, self.image_transparency]}
-
                 with dpg.table_row(parent=parent):
                     with dpg.group(horizontal=True):
 
@@ -659,7 +664,7 @@ class FileDialog:
                 dpg.set_value(sender, False)
                 current_time = time.time()
                 if current_time - self.last_click_time < 0.5 and self.last_clicked_element == sender:
-                    dpg.set_value("ex_search", "")
+                    dpg.set_value(self.tag+"ex_search", "")
                     chdir("..")
                     self.last_click_time = 0
                 self.last_click_time = current_time
@@ -688,7 +693,7 @@ class FileDialog:
                 self.selected_files.clear()
                 try:
                     dpg.configure_item(
-                        "ex_path_input", default_value=os.getcwd())
+                        self.tag+"ex_path_input", default_value=os.getcwd())
                     _dir = os.listdir(default_path)
                     delete_table()
 
@@ -697,7 +702,7 @@ class FileDialog:
                     files = [file for file in _dir if os.path.isfile(file)]
 
                     # 'special directory' that sends back to the prevorius directory
-                    with dpg.table_row(parent="explorer"):
+                    with dpg.table_row(parent=self.tag+"explorer"):
                         dpg.add_selectable(
                             label="..", callback=_back, span_columns=True, height=self.selec_height)
 
@@ -705,13 +710,13 @@ class FileDialog:
                         for _dir in dirs:
                             if not _is_hidden(_dir):
                                 if file_name_filter:
-                                    if dpg.get_value("ex_search") in _dir:
+                                    if dpg.get_value(self.tag+"ex_search") in _dir:
                                         _makedir(_dir, open_file)
                                 else:
                                     _makedir(_dir, open_file)
                             elif _is_hidden(_dir) and self.show_hidden_files:
                                 if file_name_filter:
-                                    if dpg.get_value("ex_search") in _dir:
+                                    if dpg.get_value(self.tag+"ex_search") in _dir:
                                         _makedir(_dir, open_file)
                                 else:
                                     _makedir(_dir, open_file)
@@ -721,13 +726,13 @@ class FileDialog:
                             for file in files:
                                 if not _is_hidden(file):
                                     if file_name_filter:
-                                        if dpg.get_value("ex_search") in file:
+                                        if dpg.get_value(self.tag+"ex_search") in file:
                                             _makefile(file, open_file)
                                     else:
                                         _makefile(file, open_file)
                                 elif _is_hidden(file) and self.show_hidden_files:
                                     if file_name_filter:
-                                        if dpg.get_value("ex_search") in file:
+                                        if dpg.get_value(self.tag+"ex_search") in file:
                                             _makefile(file, open_file)
                                     else:
                                         _makefile(file, open_file)
@@ -738,6 +743,7 @@ class FileDialog:
                 except Exception as e:
                     message_box(
                         "File dialog - Error", f"An unknown error has occured when listing the items, More info:\n{e}")
+                    raise e
 
             internal()
 
@@ -760,7 +766,7 @@ class FileDialog:
             with dpg.group(horizontal=True):
                 # shortcut menu
                 if (self.user_style == 0):
-                    with dpg.child_window(tag="shortcut_menu", width=200, resizable_x=True, show=self.show_shortcuts_menu, height=-info_px):
+                    with dpg.child_window(tag=self.tag+"shortcut_menu", width=200, resizable_x=True, show=self.show_shortcuts_menu, height=-info_px):
                         home = get_directory_path("Home")
                         desktop = get_directory_path("Desktop")
                         downloads = get_directory_path("Downloads")
@@ -810,7 +816,7 @@ class FileDialog:
                                         label=drive, user_data=drive, callback=open_drive)
 
                 elif (self.user_style == 1):
-                    with dpg.child_window(tag="shortcut_menu", width=40, show=self.show_shortcuts_menu, height=-info_px):
+                    with dpg.child_window(tag=self.tag+"shortcut_menu", width=40, show=self.show_shortcuts_menu, height=-info_px):
                         home = get_directory_path("Home")
                         desktop = get_directory_path("Desktop")
                         downloads = get_directory_path("Downloads")
@@ -852,15 +858,15 @@ class FileDialog:
                             dpg.add_image_button(
                                 self.img_back, callback=lambda: chdir(self.default_path))
                             dpg.add_input_text(hint="Path", on_enter=True, callback=on_path_enter,  default_value=os.getcwd(
-                            ), width=-1, tag="ex_path_input")
+                            ), width=-1, tag=self.tag+"ex_path_input")
 
                         with dpg.group(horizontal=True):
                             dpg.add_input_text(
-                                hint="Search files", callback=_search, tag="ex_search", width=-1)
+                                hint="Search files", callback=_search, tag=self.tag+"ex_search", width=-1)
 
                         # main explorer table header
                         with dpg.table(
-                            tag='explorer',
+                            tag=self.tag+"explorer",
                             height=-1,
                             width=-1,
                             resizable=True,
@@ -877,13 +883,13 @@ class FileDialog:
                             iwow_type = 10
                             iwow_size = 10
                             dpg.add_table_column(
-                                label='Name',     init_width_or_weight=iwow_name, tag="ex_name")
+                                label='Name',     init_width_or_weight=iwow_name, tag=self.tag+"ex_name")
                             dpg.add_table_column(
-                                label='Date',     init_width_or_weight=iwow_date, tag="ex_date")
+                                label='Date',     init_width_or_weight=iwow_date, tag=self.tag+"ex_date")
                             dpg.add_table_column(
-                                label='Type',     init_width_or_weight=iwow_type, tag="ex_type")
+                                label='Type',     init_width_or_weight=iwow_type, tag=self.tag+"ex_type")
                             dpg.add_table_column(
-                                label='Size',     init_width_or_weight=iwow_size, width=10, tag="ex_size")
+                                label='Size',     init_width_or_weight=iwow_size, width=10, tag=self.tag+"ex_size")
 
             with dpg.group(horizontal=True):
                 dpg.add_spacer(width=480)
