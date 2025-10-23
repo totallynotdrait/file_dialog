@@ -167,7 +167,7 @@ class FileDialog:
 
     def _search(self):
         res = dpg.get_value(self.tag+"ex_search")
-        reset_dir(default_path=os.getcwd(), file_name_filter=res)
+        self.reset_dir(default_path=os.getcwd(), file_name_filter=res)
 
     def get_directory_path(self, directory_name):
         try:
@@ -451,20 +451,23 @@ class FileDialog:
                             if not self._is_hidden(file):
                                 if file_name_filter:
                                     if dpg.get_value(self.tag+"ex_search") in file:
-                                        _makefile(file, self.open_file)
+                                        self._makefile(file, self.open_file)
                                 else:
-                                    _makefile(file, self.open_file)
+                                    self._makefile(file, self.open_file)
                             elif self._is_hidden(file) and self.show_hidden_files:
                                 if file_name_filter:
                                     if dpg.get_value(self.tag+"ex_search") in file:
-                                        _makefile(file, self.open_file)
+                                        self._makefile(file, self.open_file)
                                 else:
-                                    _makefile(file, self.open_file)
+                                    self._makefile(file, self.open_file)
 
             # exceptions
             except FileNotFoundError:
                 print("DEV:ERROR: Invalid path : "+str(default_path))
             except Exception as e:
+                #Catch all exception, so should at least print it out
+                import traceback
+                traceback.print_exception (type (e), e, e.__traceback__)
                 self.message_box(
                     "File dialog - Error", f"An unknown error has occured when listing the items, More info:\n{e}")
 
