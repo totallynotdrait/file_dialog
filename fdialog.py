@@ -125,7 +125,7 @@ class FileDialog:
         else:
             self.callback(self.selected_files)
         self.selected_files.clear()
-        reset_dir(default_path=self.default_path)
+        self.reset_dir(default_path=self.default_path)
 
     def open_drive(self, sender, app_data, user_data):
         self.chdir(user_data)
@@ -396,7 +396,7 @@ class FileDialog:
         filter_file = dpg.get_value(sender)
         self.file_filter = filter_file
         cwd = os.getcwd()
-        reset_dir(default_path=cwd)
+        self.reset_dir(default_path=cwd)
 
     def chdir(self, path):
         try:
@@ -857,7 +857,7 @@ class FileDialog:
 
                         with dpg.group(horizontal=True):
                             dpg.add_image_button(
-                                self.img_refresh, callback=lambda: reset_dir(default_path=os.getcwd()))
+                                self.img_refresh, callback=lambda: self.reset_dir(default_path=os.getcwd()))
                             dpg.add_image_button(
                                 self.img_back, callback=lambda: self.chdir(self.default_path))
                             dpg.add_input_text(hint="Path", on_enter=True, callback=self.on_path_enter,  default_value=os.getcwd(
