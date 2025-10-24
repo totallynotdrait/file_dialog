@@ -159,7 +159,7 @@ class FileDialog:
                         self.selected_files.append(user_data[1])
                     #Check if two click within 0.5s proximity
                     if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender): 
-                        return_items()
+                        self.return_items()
                     else:
                         self.last_click_time = current_time
                         self.last_clicked_element = sender
