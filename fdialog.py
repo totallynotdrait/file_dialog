@@ -148,12 +148,19 @@ class FileDialog:
 
             current_time = time.time()
             if user_data is not None and user_data[1] is not None:
+                #Check if two click within 0.5s proximity
                 if os.path.isdir(user_data[1]):
-                    self.chdir(user_data[1])
-                    self.last_clicked_element = None #Dir changed, so reset this variable
-                    dpg.set_value(self.tag+"ex_search", "")
+                    if (current_time - self.last_click_time < 0.5) and (self.last_clicked_element == sender): 
+                        self.chdir(user_data[1])
+                        self.last_clicked_element = None #Dir changed, so reset this variable
+                        dpg.set_value(self.tag+"ex_search", "")
+                    else:
+                        self.last_click_time = current_time
+                        self.last_clicked_element = sender
+                        
                     if (self.dirs_only == True): #If dirs_only == True, we now allow user to select directory then press "OK"
                         self.selected_files = [user_data[1]]
+                    
                 elif os.path.isfile(user_data[1]):
                     if not len(self.selected_files) > 1:
                         self.selected_files.append(user_data[1])
@@ -187,7 +194,7 @@ class FileDialog:
         except FileNotFoundError:
             # Search for the directory in the user's home folder
             search_path = os.path.expanduser("~/*/" + directory_name)
-            directory_path = glob.glob(search_path)
+            directory_path = glob(search_path)
             if directory_path:
                 try:
                     # Test access to the found path
@@ -195,13 +202,15 @@ class FileDialog:
                     # Use the found path
                     directory_path = directory_path[0]
                 except FileNotFoundError:
-                    message_box("File dialog - Error",
+                    self.message_box("File dialog - Error",
                                 "Could not find the selected directory")
                     return "."
             else:
-                message_box("File dialog - Error",
+                self.message_box("File dialog - Error",
                             "Could not find the selected directory")
                 return "."
+        except Exception as e:
+            return None
 
         return directory_path
 
@@ -404,10 +413,10 @@ class FileDialog:
             cwd = os.getcwd()
             self.reset_dir(default_path=cwd)
         except PermissionError as e:
-            message_box("File dialog - PerimssionError",
+            self.message_box("File dialog - PerimssionError",
                         f"Cannot open the folder because is a system folder or the access is denied\n\nMore info:\n{e}")
         except NotADirectoryError as e:
-            message_box("File dialog - not a directory",
+            self.message_box("File dialog - not a directory",
                         f"The selected item is not a directory, but a file.\n\nMore info:\n{e}")
 
     def reset_dir(self, file_name_filter=None, default_path=None):
@@ -778,34 +787,19 @@ class FileDialog:
                         musics = self.get_directory_path("Music")
                         videos = self.get_directory_path("Videos")
 
-                        with dpg.group(horizontal=True):
-                            dpg.add_image(self.img_home)
-                            dpg.add_menu_item(
-                                label="Home", callback=lambda: self.chdir(home))
-                        with dpg.group(horizontal=True):
-                            dpg.add_image(self.img_desktop)
-                            dpg.add_menu_item(
-                                label="Desktop", callback=lambda: self.chdir(desktop))
-                        with dpg.group(horizontal=True):
-                            dpg.add_image(self.img_downloads)
-                            dpg.add_menu_item(
-                                label="Downloads", callback=lambda: self.chdir(downloads))
-                        with dpg.group(horizontal=True):
-                            dpg.add_image(self.img_picture_folder)
-                            dpg.add_menu_item(
-                                label="Images", callback=lambda: self.chdir(images))
-                        with dpg.group(horizontal=True):
-                            dpg.add_image(self.img_document_folder)
-                            dpg.add_menu_item(
-                                label="Documents", callback=lambda: self.chdir(documents))
-                        with dpg.group(horizontal=True):
-                            dpg.add_image(self.img_music_folder)
-                            dpg.add_menu_item(
-                                label="Musics", callback=lambda: self.chdir(musics))
-                        with dpg.group(horizontal=True):
-                            dpg.add_image(self.img_videos)
-                            dpg.add_menu_item(
-                                label="Videos", callback=lambda: self.chdir(videos))
+                        def _add_shortcut(icon, path, label):
+                            if path is not None or os.path.exists(path):
+                                with dpg.group(horizontal=True):
+                                    dpg.add_image(icon)
+                                    dpg.add_menu_item(label=label, callback=lambda p=path: self.chdir(p))
+
+                        _add_shortcut(self.img_home, home, "Home")
+                        _add_shortcut(self.img_desktop, desktop, "Desktop")
+                        _add_shortcut(self.img_downloads, downloads, "Downloads")
+                        _add_shortcut(self.img_picture_folder, images, "Images")
+                        _add_shortcut(self.img_document_folder, documents, "Documents")
+                        _add_shortcut(self.img_music_folder, musics, "Musics")
+                        _add_shortcut(self.img_videos, videos, "Videos")
 
                         dpg.add_separator()
 
