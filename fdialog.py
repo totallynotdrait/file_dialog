@@ -791,7 +791,11 @@ class FileDialog:
                             if path is not None or os.path.exists(path):
                                 with dpg.group(horizontal=True):
                                     dpg.add_image(icon)
-                                    dpg.add_menu_item(label=label, callback=lambda p=path: self.chdir(p))
+                                    dpg.add_menu_item(
+                                        label=label, 
+                                        callback=lambda s, ad, ud: self.chdir(ud),
+                                        user_data=path
+                                    )
 
                         _add_shortcut(self.img_home, home, "Home")
                         _add_shortcut(self.img_desktop, desktop, "Desktop")
