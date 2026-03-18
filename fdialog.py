@@ -981,7 +981,15 @@ class _BaseFileDialog:
         if self.dirs_only:
             return False
 
-        return self.file_filter == ".*" or entry.name.endswith(self.file_filter)
+        if self.file_filter == ".*":
+            return True
+
+        entry_name = entry.name.casefold()
+        filters = [part.strip().casefold() for part in str(self.file_filter).split("|") if part.strip()]
+        if not filters:
+            return True
+
+        return any(entry_name.endswith(file_filter) for file_filter in filters)
 
     def _sort_key(self, entry):
         if self.sort_column == "date":
