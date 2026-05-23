@@ -35,7 +35,7 @@ class FileDialog:
     """
     # low-level functions
     def _get_all_drives(self,):
-        all_drives = psutil.disk_partitions()
+        all_drives = psutil.disk_partitions(all=True)
 
         drive_list = [
             drive.mountpoint for drive in all_drives if drive.mountpoint]
